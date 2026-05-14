@@ -1,0 +1,54 @@
+# ── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build outputs ─────────────────────────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+
+# ── Environment files ─────────────────────────────────────────────────────────
+# .env         → real secrets — NEVER commit
+# .env.local   → local overrides — NEVER commit
+# .env.*.local → local per-env overrides — NEVER commit
+#
+# .env.development and .env.production are SAFE to commit
+# (they contain only feature flags, zero secrets)
+.env
+.env.local
+.env.*.local
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# ── Test coverage ─────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Turbo ─────────────────────────────────────────────────────────────────────
+.turbo/
+
+# ── Supabase ──────────────────────────────────────────────────────────────────
+supabase/.branches/
+supabase/.temp/
+
+# ── Claude Code ───────────────────────────────────────────────────────────────
+.claude/

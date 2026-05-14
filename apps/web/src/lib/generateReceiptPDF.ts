@@ -1,0 +1,150 @@
+import jsPDF from 'jspdf'
+import type { PaymentReceipt } from '@/types/common'
+
+const RUPEE = '₹'
+
+function formatCurrency(amount: number): string {
+  return `${RUPEE}${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+function formatDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-')
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return `${d} ${months[parseInt(m) - 1]} ${y}`
+}
+
+export function generateReceiptPDF(receipt: PaymentReceipt): void {
+  // A5 portrait: 148mm × 210mm
+  const doc = new jsPDF({ format: 'a5', orientation: 'portrait', unit: 'mm' })
+
+  const W = 148
+  const margin = 12
+  const col2 = 90
+  let y = 14
+
+  // ── Header ─────────────────────────────────────────────────────────
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(30, 64, 175) // primary blue
+  doc.text('NeuraLife', margin, y)
+
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(71, 85, 105)
+  doc.text(receipt.school_name, margin, (y += 5))
+  if (receipt.school_address) {
+    doc.text(receipt.school_address, margin, (y += 4))
+  }
+
+  // Receipt title right-aligned
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(15, 23, 42)
+  doc.text('FEE RECEIPT', W - margin, 14, { align: 'right' })
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(71, 85, 105)
+  doc.text(receipt.receipt_number, W - margin, 20, { align: 'right' })
+
+  // Divider
+  y += 6
+  doc.setDrawColor(226, 232, 240)
+  doc.setLineWidth(0.4)
+  doc.line(margin, y, W - margin, y)
+
+  // ── Student Info ────────────────────────────────────────────────────
+  y += 6
+  const labelColor: [number, number, number] = [100, 116, 139]
+  const valueColor: [number, number, number] = [15, 23, 42]
+
+  const drawRow = (label: string, value: string, xOffset = 0) => {
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(...labelColor)
+    doc.text(label, margin + xOffset, y)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(...valueColor)
+    doc.text(value, margin + 32 + xOffset, y)
+  }
+
+  drawRow('Student Name', receipt.student_name)
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(...labelColor)
+  doc.text('Date', col2, y)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...valueColor)
+  doc.text(formatDate(receipt.payment_date), col2 + 20, y)
+
+  y += 5
+  drawRow('Neura ID', receipt.neura_id)
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(...labelColor)
+  doc.text('Class', col2, y)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...valueColor)
+  doc.text(`Class ${receipt.class_year} - ${receipt.section}`, col2 + 20, y)
+
+  y += 5
+  drawRow('Collected by', receipt.collected_by_name)
+
+  // ── Payment Mode ────────────────────────────────────────────────────
+  y += 5
+  drawRow('Payment Mode', receipt.payment_mode)
+  if (receipt.transaction_reference) {
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(...labelColor)
+    doc.text('Ref No.', col2, y)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(...valueColor)
+    doc.text(receipt.transaction_reference, col2 + 20, y)
+  }
+
+  // ── Allocations Table ───────────────────────────────────────────────
+  y += 8
+  doc.setFillColor(241, 245, 249)
+  doc.roundedRect(margin, y - 3, W - margin * 2, 7, 2, 2, 'F')
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(71, 85, 105)
+  doc.text('Fee Head', margin + 2, y + 1)
+  doc.text('Period', margin + 52, y + 1)
+  doc.text('Amount', W - margin - 2, y + 1, { align: 'right' })
+  y += 7
+
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(...valueColor)
+  for (const alloc of receipt.allocations) {
+    doc.setFontSize(8)
+    doc.text(alloc.fee_head.replace(/_/g, ' '), margin + 2, y)
+    doc.text(alloc.period_label ?? '—', margin + 52, y)
+    doc.text(formatCurrency(alloc.amount), W - margin - 2, y, { align: 'right' })
+    y += 5
+    doc.setDrawColor(241, 245, 249)
+    doc.line(margin, y - 2, W - margin, y - 2)
+  }
+
+  // ── Total ───────────────────────────────────────────────────────────
+  y += 3
+  doc.setDrawColor(30, 64, 175)
+  doc.setLineWidth(0.6)
+  doc.line(margin, y, W - margin, y)
+  y += 5
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(30, 64, 175)
+  doc.text('Total Paid', margin + 2, y)
+  doc.text(formatCurrency(receipt.amount), W - margin - 2, y, { align: 'right' })
+
+  // ── Footer ──────────────────────────────────────────────────────────
+  y += 10
+  doc.setFontSize(7)
+  doc.setFont('helvetica', 'italic')
+  doc.setTextColor(148, 163, 184)
+  doc.text('This is a computer-generated receipt. No signature required.', W / 2, y, { align: 'center' })
+  doc.text(`Generated by NeuraLife on ${new Date().toLocaleString('en-IN')}`, W / 2, y + 4, { align: 'center' })
+
+  doc.save(`receipt-${receipt.receipt_number}.pdf`)
+}
