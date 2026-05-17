@@ -78,7 +78,7 @@ export class ConcessionRepository {
         school_id: rule.schoolId,
         academic_year_id: rule.academicYearId,
         rule_name: rule.rule_name,
-        concession_type: rule.concession_type,
+        concession_type: rule.concession_type as Database["public"]["Enums"]["concession_type"],
         eligibility_note: rule.eligibility_note ?? null,
         applies_to_heads: rule.applies_to_heads ?? null,
         amount_type: rule.amount_type,
@@ -130,7 +130,7 @@ export class ConcessionRepository {
 
     const { data, error } = await this.db
       .from('fee_concession_rules')
-      .update(updatePayload)
+      .update(updatePayload as never)
       .eq('id', ruleId)
       .eq('school_id', schoolId)
       .select(

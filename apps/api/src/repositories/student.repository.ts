@@ -93,7 +93,7 @@ export class StudentRepository {
         this.supabase
           .from('students')
           .select(
-            'neura_id, full_name, date_of_birth, gender, blood_group, caste_category, status, band, data_consent_given, deleted_at',
+            'neura_id, full_name, date_of_birth, gender, blood_group, caste_category, status, band, data_consent_given, neuracoin_balance, deleted_at',
           )
           .eq('neura_id', neuraId)
           .is('deleted_at', null)
@@ -164,6 +164,7 @@ export class StudentRepository {
       status: s.status ?? 'ACTIVE',
       band: s.band,
       data_consent_given: s.data_consent_given ?? false,
+      neuracoin_balance: (s.neuracoin_balance as number) ?? 0,
       enrollment: {
         admission_number: enroll.admission_number,
         enrolled_at: enroll.enrolled_at,

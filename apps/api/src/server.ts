@@ -15,6 +15,9 @@ import teacherRoutes from './routes/teachers.js'
 import attendanceRoutes from './routes/attendance.js'
 import feeRoutes from './routes/fees.js'
 import contentStudioRoutes from './routes/content-studio.js'
+import examRoutes from './routes/exams.js'
+import timetableRoutes from './routes/timetable.js'
+import salaryRoutes from './routes/salary.js'
 import { AppError } from './utils/errors.js'
 
 export async function startServer() {
@@ -134,6 +137,15 @@ export async function startServer() {
 
   // Content Studio routes
   await fastify.register(contentStudioRoutes)
+
+  // Exam routes
+  await fastify.register(examRoutes)
+
+  // Timetable routes
+  await fastify.register(timetableRoutes)
+
+  // Salary routes
+  await fastify.register(salaryRoutes)
 
   // Graceful shutdown
   const shutdown = async (signal: string) => {

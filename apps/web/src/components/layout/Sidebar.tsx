@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, GraduationCap, CalendarCheck, FileText,
   IndianRupee, Wallet, Tablet, BarChart3, Globe2, Settings2,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, CalendarRange,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -29,6 +29,7 @@ const navItems: NavItem[] = [
   { label: 'Students',    icon: Users,           href: '/students',   badge: 'at_risk_count',           badgeColor: 'bg-danger' },
   { label: 'Teachers',    icon: GraduationCap,   href: '/teachers',   badge: null, badgeColor: '' },
   { label: 'Attendance',  icon: CalendarCheck,   href: '/attendance', badge: null, badgeColor: '' },
+  { label: 'Timetable',  icon: CalendarRange,   href: '/timetable',  badge: null, badgeColor: '' },
   { label: 'Exams',       icon: FileText,        href: '/exams',      badge: null, badgeColor: '' },
   { label: 'Fees',        icon: IndianRupee,     href: '/fees',       badge: 'fee_overdue_count',       badgeColor: 'bg-warning' },
   { label: 'Salary',      icon: Wallet,          href: '/salary',     badge: 'salary_pending_count',    badgeColor: 'bg-warning' },

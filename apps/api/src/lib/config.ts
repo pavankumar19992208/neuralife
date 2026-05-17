@@ -22,10 +22,12 @@ const schema = z.object({
   SUPABASE_JWT_SECRET: z.string().min(10),
   JWT_PRIVATE_KEY: z.string().min(50),
   JWT_PUBLIC_KEY: z.string().min(50),
-  AWS_ACCESS_KEY_ID: z.string().min(16),
-  AWS_SECRET_ACCESS_KEY: z.string().min(30),
-  AWS_REGION: z.string().default('ap-south-1'),
-  BEDROCK_MODEL_ID: z.string().default('us.anthropic.claude-sonnet-4-5-20250929-v1:0'),
+  // Bedrock auth — use BEDROCK_API_KEY (ABSK…) OR the IAM pair below; not both needed
+  BEDROCK_API_KEY: z.string().startsWith('ABSK').optional(),
+  AWS_ACCESS_KEY_ID: z.string().min(16).optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().min(30).optional(),
+  AWS_REGION: z.string().default('us-east-1'),
+  BEDROCK_MODEL_ID: z.string().default('us.anthropic.claude-sonnet-4-6'),
   GEMINI_API_KEY: z.string().optional(),
   // gemini-2.5-flash: fast structured JSON, ideal for content generation (vs pro which is a slow thinking model)
   GEMINI_MODEL_ID: z.string().default('gemini-2.5-flash'),

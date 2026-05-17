@@ -104,7 +104,7 @@ export class CustomFeeHeadRepository {
         amounts.map((a) => ({
           custom_fee_head_id: row.id,
           class_year: a.class_year ?? null,
-          student_category: a.student_category ?? null,
+          student_category: (a.student_category ?? null) as Database["public"]["Enums"]["fee_category"] | null,
           amount: a.amount,
         })),
       )
@@ -138,7 +138,7 @@ export class CustomFeeHeadRepository {
 
     const { data, error } = await this.db
       .from('custom_fee_heads')
-      .update(updatePayload)
+      .update(updatePayload as never)
       .eq('id', headId)
       .eq('school_id', schoolId)
       .select('id, head_code, display_name, description, collection_type, is_active')
@@ -156,7 +156,7 @@ export class CustomFeeHeadRepository {
           updates.amounts.map((a) => ({
             custom_fee_head_id: headId,
             class_year: a.class_year ?? null,
-            student_category: a.student_category ?? null,
+            student_category: (a.student_category ?? null) as Database["public"]["Enums"]["fee_category"] | null,
             amount: a.amount,
           })),
         )

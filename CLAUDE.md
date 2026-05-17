@@ -20,7 +20,50 @@ into one system — managing attendance, learning, fees, and communication.
 
 > **UPDATE THIS AT THE START OF EVERY SESSION.**
 
-**Layer 7 — Exams Module** ← NEXT
+**Layer 9 — Fleet / SmartPad Management** ← NEXT
+
+**Completed — Salary & Payroll (Layer 8):**
+
+- [x] Migration 020: `payroll_runs`, `payslips`, `payroll_adjustments` + RLS service_role policies
+- [x] Types (api + web): `PayrollStatus`, `PayslipStatus`, `AdjustmentType`, `PayrollAdjustment`, `PayslipRow`, `PayrollSummary`, `NEFTExportRow`
+- [x] `PayrollRepository` (15 methods), `PayrollService` (LOP+PT+PF+ESI computation, generate/approve/pay/adjust/hold)
+- [x] 10 API routes in `salary.ts`: GET payroll, POST generate (server-side academic year lookup), POST approve, POST mark-paid, POST/DELETE adjustment, GET neft-export, GET payslip/:id, GET history, PATCH hold/release
+- [x] `useSalary.ts` (9 hooks), `generatePayslipPDF.ts` (A4 portrait jsPDF), `buildNEFTCSV` helper
+- [x] `SalaryPage` — 3 tabs: Monthly Payroll (generate/approve/pay, payslip table, NEFT export), History, Revisions
+- [x] PayslipDrawer — net pay box, earnings/deductions breakdown, adjustment CRUD, hold/release, PDF download per payslip
+- [x] 0 TypeScript errors (web + api)
+
+**Completed — Timetable Builder:**
+
+- [x] Migration 019: `school_period_config`, `school_assembly_config`, `timetable_requirements`, `timetable_generations` + RLS + `timetable_slots` column additions
+- [x] `TimetableRepository` (13 methods), `TimetableService` (CSP algorithm with LCG seeded shuffle), 10 timetable routes
+- [x] Types (api + web): `PeriodConfigRow`, `AssemblyConfig`, `TimetableRequirement`, `TimetableConfig`, `TimetableSlotEntry`, `TimetableConflict`, `GeneratedTimetable`, `TimetableStatus`, `TeacherSubjectAssignment`
+- [x] `TimetableConfig` includes `teacher_assignments[]` — enrollment-sourced teacher→subject→grade map, always returned by `GET /timetable/config`
+- [x] `useTimetable.ts` (7 hooks), `generateTimetablePDF.ts` (A4 landscape + JSZip), `switch.tsx` component
+- [x] `TimetablePage` → `SetupWizard` (3 steps) → `TimetableView` with Class/Teacher toggle
+- [x] Step1: SCERT AP pre-filled subjects, ECA add/remove, Assembly config, live summary
+- [x] Step2: Working days, per-day period timeline, break/lunch config, slot checker
+- [x] Step3: CSP loading animation, conflict panel, teacher workload, class tabs, editable grid, EditPeriodPanel
+- [x] `TimetableGrid`: color-coded cells, hover edit, double-period markers, conflict highlights, drag-to-swap day rows
+- [x] `EditPeriodPanel`: subject grid → teacher card list with Available / Busy / Here badges; auto-selects first free teacher; conflict warning on save
+- [x] Bugfix: BREAK slots got duplicate `period_number: -1` causing 500 on confirm — fixed to use `-(period)` per break slot
+- [x] Sidebar: CalendarRange icon + Timetable nav item
+- [x] 0 TypeScript errors (web + api), build SUCCESS
+
+**Completed — Layer 7 (Exams Module):**
+
+- [x] Migration 018: `exam_date DATE` on `exam_subjects`, `schedule_type TEXT` on `exams`
+- [x] SyllabusRepository: `getSubjectsForGrade`, `getClassSections` (from student_yearly_progress), SA1 chapter fix (first 50%)
+- [x] ExamRepository: `createExam` with exam_date per subject, `listExams` with class_range computed, `getExamById` with exam_date
+- [x] ExamService: `prepareBatch` (working days, round-robin date assignment, auto chapter selection), board defaults helpers
+- [x] Routes: `GET /exams/batch/prepare`, `GET /exams/subjects`, `GET /exams/chapters`, `GET /exams/chapters/auto-select`
+- [x] Types (api + web): `BatchSubjectSlot`, `BatchClassSection`, `BatchPrepareResult`, `exam_date`, `class_range`, `schedule_type`
+- [x] apps/web: `CreateExamModal` — mode selection (Individual vs Batch), batch Gantt flow, `BatchGanttStep` drag-drop
+- [x] apps/web: `ExamsPage` — "Classes" column with class_range chip
+- [x] apps/web: `useExams.ts` — `useBatchPrepare`, `useSubjectsForGrade`, `useExam` alias
+- [x] shadcn: `textarea.tsx`, `tooltip.tsx` (installed @radix-ui/react-tooltip)
+- [x] `neuracoin_balance` added to StudentDetail (api + web) + displayed in StudentProfilePage
+- [x] 130/130 tests passing, 0 TypeScript errors
 
 **Completed — Content Studio (Extended):**
 

@@ -15,7 +15,10 @@ const TeachersPage        = lazy(() => import('@/pages/Teachers/TeachersPage'))
 const TeacherProfilePage  = lazy(() => import('@/pages/Teachers/TeacherProfilePage'))
 const AttendancePage = lazy(() => import('@/pages/Attendance/AttendancePage'))
 const AttendanceAnalyticsPage = lazy(() => import('@/pages/Attendance/AttendanceAnalyticsPage'))
-const ExamsPage      = lazy(() => import('@/pages/Exams/ExamsPage'))
+const ExamsPage         = lazy(() => import('@/pages/Exams/ExamsPage'))
+const ExamDetailPage    = lazy(() => import('@/pages/Exams/ExamDetailPage'))
+const MarksEntryPage    = lazy(() => import('@/pages/Exams/MarksEntryPage'))
+const ReportCardPage    = lazy(() => import('@/pages/Exams/ReportCardPage'))
 const FeesPage            = lazy(() => import('@/pages/Fees/FeesPage'))
 const FeeAnalyticsPage    = lazy(() => import('@/pages/Fees/FeeAnalyticsPage'))
 const SalaryPage     = lazy(() => import('@/pages/Salary/SalaryPage'))
@@ -24,6 +27,7 @@ const AnalyticsPage  = lazy(() => import('@/pages/Analytics/AnalyticsPage'))
 const SpherePage     = lazy(() => import('@/pages/Sphere/SpherePage'))
 const SettingsPage        = lazy(() => import('@/pages/Settings/SettingsPage'))
 const ContentStudioPage   = lazy(() => import('@/pages/ContentStudio/ContentStudioPage'))
+const TimetablePage       = lazy(() => import('@/pages/Timetable/TimetablePage'))
 
 function PageSpinner() {
   return (
@@ -100,8 +104,23 @@ export default function App() {
               </ProtectedRoute>
             } />
             <Route path="/exams" element={
-              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.TEACHER]}>
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
                 <ExamsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/exams/:examId" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
+                <ExamDetailPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/exams/:examId/marks" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
+                <MarksEntryPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/exams/:examId/report-card/:neuraId" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
+                <ReportCardPage />
               </ProtectedRoute>
             } />
             <Route path="/fees" element={
@@ -137,6 +156,11 @@ export default function App() {
             <Route path="/settings" element={
               <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL]}>
                 <SettingsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/timetable" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN]}>
+                <TimetablePage />
               </ProtectedRoute>
             } />
           </Route>

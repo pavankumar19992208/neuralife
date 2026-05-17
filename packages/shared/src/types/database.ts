@@ -1345,53 +1345,125 @@ export type Database = {
           },
         ]
       }
-      exam_results: {
+      exam_marks: {
         Row: {
-          entered_at: string | null
-          entered_by: string
-          exam_schedule_id: string
           id: string
-          is_absent: boolean | null
-          marks_obtained: number | null
+          exam_id: string
+          exam_subject_id: string
           neura_id: string
-          remarks: string | null
-          school_id: string
+          marks_obtained: number | null
+          is_absent: boolean
+          entered_by: string | null
+          entered_at: string | null
+          updated_at: string
         }
         Insert: {
-          entered_at?: string | null
-          entered_by: string
-          exam_schedule_id: string
           id?: string
-          is_absent?: boolean | null
-          marks_obtained?: number | null
+          exam_id: string
+          exam_subject_id: string
           neura_id: string
-          remarks?: string | null
-          school_id: string
+          marks_obtained?: number | null
+          is_absent?: boolean
+          entered_by?: string | null
+          entered_at?: string | null
+          updated_at?: string
         }
         Update: {
-          entered_at?: string | null
-          entered_by?: string
-          exam_schedule_id?: string
           id?: string
-          is_absent?: boolean | null
-          marks_obtained?: number | null
+          exam_id?: string
+          exam_subject_id?: string
           neura_id?: string
-          remarks?: string | null
-          school_id?: string
+          marks_obtained?: number | null
+          is_absent?: boolean
+          entered_by?: string | null
+          entered_at?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "exam_results_entered_by_fkey"
-            columns: ["entered_by"]
+            foreignKeyName: "exam_marks_exam_id_fkey"
+            columns: ["exam_id"]
             isOneToOne: false
-            referencedRelation: "teachers"
+            referencedRelation: "exams"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "exam_results_exam_schedule_id_fkey"
-            columns: ["exam_schedule_id"]
+            foreignKeyName: "exam_marks_exam_subject_id_fkey"
+            columns: ["exam_subject_id"]
             isOneToOne: false
-            referencedRelation: "exam_schedules"
+            referencedRelation: "exam_subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_marks_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+        ]
+      }
+      exam_results: {
+        Row: {
+          id: string
+          exam_id: string
+          neura_id: string
+          total_marks_obtained: number
+          total_max_marks: number
+          percentage: number
+          grade: string
+          class_rank: number | null
+          overall_rank: number | null
+          is_pass: boolean
+          subject_results: unknown
+          neuracoin_earned: number
+          teacher_remarks: string | null
+          computed_at: string
+          class_year: number | null
+          section: string | null
+        }
+        Insert: {
+          id?: string
+          exam_id: string
+          neura_id: string
+          total_marks_obtained: number
+          total_max_marks: number
+          percentage: number
+          grade: string
+          class_rank?: number | null
+          overall_rank?: number | null
+          is_pass: boolean
+          subject_results?: unknown
+          neuracoin_earned?: number
+          teacher_remarks?: string | null
+          computed_at?: string
+          class_year?: number | null
+          section?: string | null
+        }
+        Update: {
+          id?: string
+          exam_id?: string
+          neura_id?: string
+          total_marks_obtained?: number
+          total_max_marks?: number
+          percentage?: number
+          grade?: string
+          class_rank?: number | null
+          overall_rank?: number | null
+          is_pass?: boolean
+          subject_results?: unknown
+          neuracoin_earned?: number
+          teacher_remarks?: string | null
+          computed_at?: string
+          class_year?: number | null
+          section?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_results_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
             referencedColumns: ["id"]
           },
           {
@@ -1401,87 +1473,130 @@ export type Database = {
             referencedRelation: "students"
             referencedColumns: ["neura_id"]
           },
-          {
-            foreignKeyName: "exam_results_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
         ]
       }
-      exam_schedules: {
+      exam_subjects: {
         Row: {
-          academic_year_id: string
-          auto_generate_fee: boolean | null
-          class_year: number
-          created_at: string | null
-          created_by: string | null
-          duration_minutes: number | null
-          exam_date: string
-          exam_fee_amount: number | null
-          exam_name: string
-          exam_type: string
           id: string
-          passing_marks: number | null
-          school_id: string
+          exam_id: string
           subject: string
-          total_marks: number
+          class_year: number
+          section: string | null
+          max_marks: number
+          pass_marks: number
+          teacher_id: string | null
+          exam_date: string | null
+          created_at: string
         }
         Insert: {
-          academic_year_id: string
-          auto_generate_fee?: boolean | null
-          class_year: number
-          created_at?: string | null
-          created_by?: string | null
-          duration_minutes?: number | null
-          exam_date: string
-          exam_fee_amount?: number | null
-          exam_name: string
-          exam_type: string
           id?: string
-          passing_marks?: number | null
-          school_id: string
+          exam_id: string
           subject: string
-          total_marks: number
+          class_year: number
+          section?: string | null
+          max_marks?: number
+          pass_marks?: number
+          teacher_id?: string | null
+          exam_date?: string | null
+          created_at?: string
         }
         Update: {
-          academic_year_id?: string
-          auto_generate_fee?: boolean | null
-          class_year?: number
-          created_at?: string | null
-          created_by?: string | null
-          duration_minutes?: number | null
-          exam_date?: string
-          exam_fee_amount?: number | null
-          exam_name?: string
-          exam_type?: string
           id?: string
-          passing_marks?: number | null
-          school_id?: string
+          exam_id?: string
           subject?: string
-          total_marks?: number
+          class_year?: number
+          section?: string | null
+          max_marks?: number
+          pass_marks?: number
+          teacher_id?: string | null
+          exam_date?: string | null
+          created_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "exam_schedules_academic_year_id_fkey"
-            columns: ["academic_year_id"]
+            foreignKeyName: "exam_subjects_exam_id_fkey"
+            columns: ["exam_id"]
             isOneToOne: false
-            referencedRelation: "academic_years"
+            referencedRelation: "exams"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "exam_schedules_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: "exam_subjects_teacher_id_fkey"
+            columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teachers"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      exams: {
+        Row: {
+          id: string
+          school_id: string
+          academic_year_id: string
+          name: string
+          exam_type: Database["public"]["Enums"]["exam_type"]
+          description: string | null
+          start_date: string
+          end_date: string
+          status: Database["public"]["Enums"]["exam_status"]
+          schedule_type: string
+          created_by: string
+          deleted_at: string | null
+          ai_insight: string | null
+          chapter_ids: unknown
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          school_id: string
+          academic_year_id: string
+          name: string
+          exam_type: Database["public"]["Enums"]["exam_type"]
+          description?: string | null
+          start_date: string
+          end_date: string
+          status?: Database["public"]["Enums"]["exam_status"]
+          schedule_type?: string
+          created_by: string
+          deleted_at?: string | null
+          ai_insight?: string | null
+          chapter_ids?: unknown
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          school_id?: string
+          academic_year_id?: string
+          name?: string
+          exam_type?: Database["public"]["Enums"]["exam_type"]
+          description?: string | null
+          start_date?: string
+          end_date?: string
+          status?: Database["public"]["Enums"]["exam_status"]
+          schedule_type?: string
+          created_by?: string
+          deleted_at?: string | null
+          ai_insight?: string | null
+          chapter_ids?: unknown
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "exam_schedules_school_id_fkey"
+            foreignKeyName: "exams_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exams_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
             referencedColumns: ["id"]
           },
         ]
@@ -1881,6 +1996,50 @@ export type Database = {
           },
           {
             foreignKeyName: "fee_structures_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grade_config: {
+        Row: {
+          id: string
+          school_id: string | null
+          grade_label: string
+          min_percentage: number
+          max_percentage: number
+          grade_points: number
+          neuracoin_reward: number
+          display_color: string
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          school_id?: string | null
+          grade_label: string
+          min_percentage: number
+          max_percentage: number
+          grade_points?: number
+          neuracoin_reward?: number
+          display_color?: string
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          school_id?: string | null
+          grade_label?: string
+          min_percentage?: number
+          max_percentage?: number
+          grade_points?: number
+          neuracoin_reward?: number
+          display_color?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grade_config_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
@@ -2359,6 +2518,67 @@ export type Database = {
           },
         ]
       }
+      marks_entry_audit: {
+        Row: {
+          id: string
+          exam_id: string
+          exam_subject_id: string
+          neura_id: string
+          action: string
+          old_marks: number | null
+          new_marks: number | null
+          entered_by: string
+          reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          exam_id: string
+          exam_subject_id: string
+          neura_id: string
+          action: string
+          old_marks?: number | null
+          new_marks?: number | null
+          entered_by: string
+          reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          exam_id?: string
+          exam_subject_id?: string
+          neura_id?: string
+          action?: string
+          old_marks?: number | null
+          new_marks?: number | null
+          entered_by?: string
+          reason?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marks_entry_audit_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marks_entry_audit_exam_subject_id_fkey"
+            columns: ["exam_subject_id"]
+            isOneToOne: false
+            referencedRelation: "exam_subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marks_entry_audit_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+        ]
+      }
       message_threads: {
         Row: {
           class_teacher_visible: boolean | null
@@ -2508,6 +2728,57 @@ export type Database = {
           version?: string
         }
         Relationships: []
+      }
+      neuracoin_ledger: {
+        Row: {
+          id: string
+          neura_id: string
+          school_id: string
+          transaction_type: string
+          amount: number
+          reference_id: string | null
+          reference_type: string | null
+          description: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          neura_id: string
+          school_id: string
+          transaction_type: string
+          amount: number
+          reference_id?: string | null
+          reference_type?: string | null
+          description: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          neura_id?: string
+          school_id?: string
+          transaction_type?: string
+          amount?: number
+          reference_id?: string | null
+          reference_type?: string | null
+          description?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "neuracoin_ledger_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+          {
+            foreignKeyName: "neuracoin_ledger_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       neurasphere_posts: {
         Row: {
@@ -4462,6 +4733,7 @@ export type Database = {
           nationality: string | null
           neura_id: string
           religion: string | null
+          neuracoin_balance: number
           status: Database["public"]["Enums"]["student_status"] | null
           updated_at: string | null
         }
@@ -4481,6 +4753,7 @@ export type Database = {
           gender?: string | null
           nationality?: string | null
           neura_id: string
+          neuracoin_balance?: number
           religion?: string | null
           status?: Database["public"]["Enums"]["student_status"] | null
           updated_at?: string | null
@@ -4501,6 +4774,7 @@ export type Database = {
           gender?: string | null
           nationality?: string | null
           neura_id?: string
+          neuracoin_balance?: number
           religion?: string | null
           status?: Database["public"]["Enums"]["student_status"] | null
           updated_at?: string | null
@@ -5158,6 +5432,10 @@ export type Database = {
       is_my_child: { Args: { check_neura_id: string }; Returns: boolean }
       is_my_school: { Args: { school_id: string }; Returns: boolean }
       is_school_admin: { Args: never; Returns: boolean }
+      increment_neuracoin_balance: {
+        Args: { p_neura_id: string; p_amount: number }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
@@ -5194,6 +5472,14 @@ export type Database = {
         | "SIBLING_SECOND"
         | "SIBLING_THIRD_PLUS"
       day_of_week: "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN"
+      exam_status:
+        | "DRAFT"
+        | "SCHEDULED"
+        | "IN_PROGRESS"
+        | "MARKS_PENDING"
+        | "PUBLISHED"
+        | "ARCHIVED"
+      exam_type: "FA1" | "FA2" | "FA3" | "FA4" | "SA1" | "SA2" | "UNIT_TEST" | "PTM"
       device_status:
         | "ACTIVE"
         | "LOCKED"
@@ -5237,6 +5523,14 @@ export type Database = {
       mastery_classification: "MASTERED" | "GOOD" | "DEVELOPING" | "AT_RISK"
       medium_type: "ENGLISH" | "TELUGU" | "BOTH"
       moderation_status: "PENDING" | "APPROVED" | "REJECTED" | "HUMAN_REVIEW"
+      neuracoin_transaction_type:
+        | "EXAM_REWARD"
+        | "ATTENDANCE_REWARD"
+        | "HOMEWORK_REWARD"
+        | "SUBJECT_TOPPER_BONUS"
+        | "MANUAL_CREDIT"
+        | "MANUAL_DEDUCTION"
+        | "REDEMPTION"
       notification_channel: "FCM" | "SMS" | "EMAIL" | "IN_APP"
       notification_severity: "S1" | "S2" | "S3" | "S4"
       notification_status: "PENDING" | "SENT" | "DELIVERED" | "READ" | "FAILED"

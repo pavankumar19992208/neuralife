@@ -42,6 +42,7 @@ import { useAuthStore } from '@/store/authStore'
 import { UserRole } from '@/types/common'
 import { cn } from '@/lib/utils'
 import type { StudentDetail } from '@/types/common'
+import NeuraCoinBadge from '@/components/ui/NeuraCoinBadge'
 
 // ─── Mastery subjects ─────────────────────────────────────────────────────
 
@@ -269,9 +270,12 @@ export default function StudentProfilePage() {
           <div className="flex-1 min-w-0 space-y-1">
             <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{student.full_name}</h2>
 
-            <span className="inline-block font-mono text-sm bg-primary/5 text-primary px-3 py-1 rounded-full border border-primary/20">
-              {student.neura_id}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-block font-mono text-sm bg-primary/5 text-primary px-3 py-1 rounded-full border border-primary/20">
+                {student.neura_id}
+              </span>
+              <NeuraCoinBadge amount={student.neuracoin_balance} size="sm" />
+            </div>
 
             {progress && (
               <p className="text-sm text-slate-600 pt-1">

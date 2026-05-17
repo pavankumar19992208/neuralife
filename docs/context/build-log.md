@@ -7,8 +7,297 @@
 
 ## Current Status
 
-**Layer:** 6 — Content Studio extended ✅ — methodology named, E-Library spec finalized, code updated
-**Phase:** Content Studio fully spec'd + code-aligned — ready for Layer 7 (Exams)
+**Layer:** Salary & Payroll ✅ — Complete (migration, API, PDF, full UI)
+**Phase:** Salary done — ready for Layer 9 (Fleet / SmartPad Management)
+
+---
+
+## Session — 2026-05-16d (Salary & Payroll — Full Module)
+
+### Completed This Session
+
+#### Migration 020 — `supabase/migrations/20260520000020_salary_payroll.sql`
+- Three new tables: `payroll_runs` (per school/month/year run record), `payslips` (one row per teacher per run), `payroll_adjustments` (bonus/fine/arrear/recovery per payslip)
+- Foreign keys: `school_id → TEXT` (matches `schools.id TEXT PRIMARY KEY`), `teacher_id → UUID`, `academic_year_id → UUID`
+- RLS: service_role bypass policies (routes use `supabaseAdmin`)
+- Pushed successfully with `npx supabase db push --include-all`
+
+#### PayrollRepository (`apps/api/src/repositories/payroll.repository.ts`)
+- Uses `private get db(): any` pattern for new untyped tables (tables not yet in Supabase generated types)
+- `getTeachersWithSalary`: joins `teacher_school_assignments!teacher_id` to get `employee_id` + `designation` (not on `teachers` table directly)
+- `getTeacherLopDays`: queries `leave_applications` for approved LOP leaves in the payroll month
+- `buildSummary`: assembles `PayrollSummary` with full `PayslipRow[]` from raw DB rows + teacher metadata maps
+
+#### PayrollService (`apps/api/src/services/payroll.service.ts`)
+- `computeGross`: resolves HRA/DA as PERCENT or FIXED of basic; computes gross = basic + hra + da + transport + special
+- `computeDeductions`: LOP daily rate = gross / working_days × lop_days; PF = basic × 0.12; ESI = gross × 0.0075 if gross ≤ 21,000; PT = ₹200 if gross > 15,000 (AP/TS standard); min net = 0
+- Working days constant: 26 (standard Indian payroll assumption)
+- `generatePayroll`: academic year ID looked up server-side via `EnrollmentRepository.getCurrentAcademicYear`
+- All mutations recompute net after adjustment changes
+
+#### Salary Routes (`apps/api/src/routes/salary.ts`) — 10 routes
+| Route | Purpose |
+|-------|---------|
+| GET /api/v1/salary/payroll | Get run for month/year (null if none) |
+| POST /api/v1/salary/payroll/generate | Generate/regenerate payroll |
+| POST /api/v1/salary/payroll/approve | Approve (PRINCIPAL only) |
+| POST /api/v1/salary/payroll/mark-paid | Mark all non-held as PAID |
+| POST /api/v1/salary/payslip/:id/adjustment | Add bonus/deduction |
+| DELETE /api/v1/salary/payslip/:id/adjustment/:adjId | Remove adjustment |
+| GET /api/v1/salary/payroll/neft-export | NEFT rows (excludes ON_HOLD + missing bank) |
+| GET /api/v1/salary/payslip/:id | Single payslip |
+| GET /api/v1/salary/history | All runs for school |
+| PATCH /api/v1/salary/payslip/:id/hold | Set ON_HOLD |
+| PATCH /api/v1/salary/payslip/:id/release | Set GENERATED |
+
+#### Web: Types, Hooks, PDF
+- `apps/web/src/types/common.ts`: `PayrollStatus`, `PayslipStatus`, `AdjustmentType`, `PayrollAdjustment`, `PayslipRow`, `PayrollSummary`, `NEFTExportRow` mirrored from api types
+- `apps/web/src/hooks/useSalary.ts`: 9 hooks (usePayroll, usePayrollHistory, useGeneratePayroll, useApprovePayroll, useMarkPaid, useAddAdjustment, useDeleteAdjustment, useNEFTExport, useHoldPayslip, useReleaseHold)
+- `apps/web/src/lib/generatePayslipPDF.ts`: A4 portrait payslip (jsPDF) — school header, employee box, earnings/deductions two-column table, prominent NET PAY blue box, amount in words, bank details; `buildNEFTCSV` for CSV export
+
+#### SalaryPage (`apps/web/src/pages/Salary/SalaryPage.tsx`)
+- Replaced placeholder stub with full 3-tab page
+- **Monthly Payroll tab**: month navigator, KPI strip (teachers/gross/deductions/net), generate/approve/mark-paid buttons, status timeline, payslip table with hold indicator badges
+- **PayslipDrawer**: slide-in panel per teacher — net pay blue box, earnings list, deductions list, add/remove adjustments inline, hold/release toggle, per-payslip PDF download
+- **History tab**: full payroll run history table
+- **Revisions tab**: placeholder directing to Teacher Profile → Salary tab
+
+### Key Decisions
+- `salary.ts` route calls `enrollRepo.getCurrentAcademicYear` server-side — no need for frontend to pass academic_year_id
+- New DB tables use `(this.supabase as any)` pattern for tables not yet in Supabase generated types (same pattern as timetable repo)
+- NEFT export excludes `ON_HOLD` payslips and teachers with missing bank details (defensive — avoids failed NEFT submissions)
+
+---
+
+## Session — 2026-05-16c (Timetable Builder — Teacher Picker + Bug Fixes)
+
+### Completed This Session
+
+#### Bug Fix: 500 on `POST /api/v1/timetable/confirm`
+- **Root cause:** `buildDaySlots` assigned `period_number: -1` to ALL break slots. With `short_break_after_periods: [2, 5]`, two BREAK rows per day both got `-1`, hitting the UNIQUE constraint on `(academic_year_id, school_id, class_year, section, day_of_week, period_number)` on the second insert.
+- **Fix:** Changed to `period_number: -(period)` for breaks (e.g. break after period 2 → `-2`, break after period 5 → `-5`) and `period_number: -(100 + period)` for lunch. Unique within a day; no DB constraint violations.
+
+#### Drag-to-swap days — fully wired
+- `TimetableGrid.tsx`: Fixed `workingDays.map` block-body closing syntax (`})}` instead of `})`). Drag handles, drop targets, and swap indicator were already in the component.
+- `SetupWizard.tsx`: Added `handleSwapDays` — remaps all `day_of_week` values in `generated.entries` state to swap two days atomically.
+- `Step3Preview.tsx`: Added `onSwapDays` prop, threads it to `TimetableGrid`.
+
+#### `TeacherSubjectAssignment` type + config enrichment
+- Added `TeacherSubjectAssignment { subject, class_year, teacher_id, teacher_name }` to both `apps/api/src/types/common.ts` and `apps/web/src/types/common.ts`.
+- Added `teacher_assignments: TeacherSubjectAssignment[]` to `TimetableConfig` in both.
+- `TimetableRepository.getConfig` now always calls `getTeacherSubjectAssignments` and includes the result in the config response. This is populated from the `teacher_subject_assignments` enrollment table — the authoritative source of who teaches what subject to which grade.
+
+#### `EditPeriodPanel` — complete redesign of teacher section
+- **Before:** Auto-assigned `req.teacher_id`; no visibility into other assignments; no availability status.
+- **After:**
+  - Select subject → shows all teachers enrolled for that subject+grade (from `teacher_assignments`)
+  - Each teacher rendered as a card: initials avatar, full name, "Grade X · SUBJECT" label
+  - Availability badge per teacher:
+    - **Available** (green) — not assigned anywhere at this day+period
+    - **Busy: Class X-Y** (amber, non-clickable) — already teaching another class at this exact slot
+    - **Here** (blue) — already assigned to this slot for this class (editing existing)
+  - Auto-selects first available teacher when subject changes
+  - Fallback: if no teachers are enrolled for subject+grade, shows amber notice + manual name input
+  - `teacher_name` now included in `onSave` updates payload so grid cell immediately shows name after assigning
+
+#### Component prop threading
+- `TimetablePage` → `SetupWizard` + `TimetableView`: passes `teacherAssignments`
+- `SetupWizard` → `Step3Preview`: passes `teacherAssignments`
+- `Step3Preview` → `EditPeriodPanel`: passes `teacherAssignments` filtered to selected class year
+- `TimetableView` → `EditPeriodPanel`: passes `teacherAssignments` + current class `entries` for availability check
+- `handleEditSave` signatures updated to include `teacher_name?: string` throughout the call chain
+
+### TypeScript
+- API: 0 errors ✅
+- Web: 0 errors ✅
+
+### Key Design Decisions This Session
+- **`teacher_assignments` lives in config, not requirements:** Requirements define curriculum (periods/week, double period, etc.). Teacher assignments come from enrollment and are read-only from the timetable's perspective. Keeping them separate avoids conflating scheduling config with HR data.
+- **Auto-select first *available* teacher on subject change:** Avoids the common case where the default teacher is already scheduled elsewhere. The user still sees all options and can override.
+- **`teacher_name` in save payload:** The grid shows `entry.teacher_name`. Without including it in the update, the cell would revert to "—" after an in-memory edit until re-generation. Including it keeps the local preview consistent.
+- **BREAK period_number uses `-(period)` not `-1`:** Each break is uniquely identified by the period it follows. This is stable across re-generates (same config always produces same break period numbers) and never collides within a day.
+
+---
+
+## Session — 2026-05-16b (Timetable Builder — Complete)
+
+### Completed This Session
+
+#### Migration `20260519000019_timetable_builder.sql` — PUSHED ✅
+- [x] `school_period_config`, `school_assembly_config`, `timetable_requirements`, `timetable_generations` tables
+- [x] RLS policies on all 4 tables
+- [x] `ALTER TABLE timetable_slots ADD COLUMN is_double_period BOOLEAN DEFAULT FALSE, double_period_end_time TIME, subject_type TEXT DEFAULT 'ACADEMIC'`
+
+#### `apps/api/src/types/common.ts` (appended)
+- [x] `DAYS_SHORT`, `DAYS_FULL`, `SCERT_AP_DEFAULTS`, `ECA_PRESETS` constants
+- [x] `PeriodConfigRow`, `AssemblyConfig`, `TimetableRequirement`, `TimetableConfig`
+- [x] `TimetableSlotEntry`, `TimetableConflict`, `GeneratedTimetable`, `TimetableStatus`
+
+#### `apps/api/src/repositories/timetable.repository.ts` (new)
+- [x] 13 methods: getConfig, savePeriodConfig, saveAssemblyConfig, saveRequirements, getStatus, getEntries, getTeacherEntries, deleteConfirmedEntries, saveConfirmedTimetable (batch 500), upsertSlot (teacher conflict check), saveGeneration, getGeneration
+
+#### `apps/api/src/services/timetable.service.ts` (new)
+- [x] Full CSP algorithm: buildDaySlots, seededShuffle (LCG), generate()
+- [x] Most-constrained-first ordering, teacher busy tracking Map<teacherId,Map<day,Set<period>>>
+- [x] Hard constraint checks: teacher double-booking, lab consecutive slots, subject twice/day, PT position
+- [x] Soft constraint scoring, teacher workload summary
+
+#### `apps/api/src/routes/timetable.ts` (new, 10 routes)
+- [x] GET/POST /timetable/config, GET /timetable/status, POST /timetable/generate
+- [x] POST /timetable/confirm (PRINCIPAL only), PUT /timetable/entry (teacher conflict → 409)
+- [x] GET /timetable/entries, GET /timetable/teacher/:teacherId
+
+#### `apps/api/src/server.ts` updated — timetableRoutes registered
+
+#### Web types mirrored in `apps/web/src/types/common.ts`
+
+#### `apps/web/src/hooks/useTimetable.ts` (new — 7 hooks)
+- [x] useTimetableStatus, useTimetableConfig, useTimetable, useTeacherTimetable
+- [x] useGenerateTimetable, useConfirmTimetable, useUpdateTimetableEntry, useSaveTimetableConfig
+
+#### `apps/web/src/lib/generateTimetablePDF.ts` (new)
+- [x] A4 landscape per-class PDF with color-coded subject cells
+- [x] JSZip for multi-class download
+
+#### `apps/web/src/components/ui/switch.tsx` (new)
+- [x] Simple accessible Switch toggle component
+
+#### `apps/web/src/pages/Timetable/` (new — 7 files)
+- [x] `TimetablePage.tsx` — entry point, status check → SetupWizard or TimetableView, header with mode tabs
+- [x] `components/SetupWizard.tsx` — 3-step wizard with animated step indicator
+- [x] `components/Step1Subjects.tsx` — SCERT AP defaults, class year tabs, ECA add/remove, Assembly config, live summary
+- [x] `components/Step2Hours.tsx` — working days, per-day timeline config, break/lunch selectors, slot checker
+- [x] `components/Step3Preview.tsx` — CSP loading animation, conflict panel, workload summary, class tabs, editable grid
+- [x] `components/TimetableGrid.tsx` — color-coded grid, hover edit, double-period markers, conflict highlights
+- [x] `components/EditPeriodPanel.tsx` — slide-in right panel, subject picker, teacher display, room field
+- [x] `components/TimetableView.tsx` — Class/Teacher toggle, confirmed timetable view, PDF download
+
+#### `apps/web/src/components/layout/Sidebar.tsx` updated
+- [x] `CalendarRange` icon + Timetable nav item between Attendance and Exams
+
+#### `apps/web/src/App.tsx` updated
+- [x] `/timetable` lazy route (PRINCIPAL + SCHOOL_ADMIN)
+
+### TypeScript
+- API: 0 errors ✅
+- Web: 0 errors ✅
+
+### Build
+- `pnpm --filter web build` — SUCCESS ✅
+
+### Key Design Decisions
+- **CSP with seeded shuffle:** LCG-based shuffle allows "Try Different Combination" to produce deterministically different results with the same algorithm
+- **Double periods as two rows:** Two consecutive `timetable_slots` entries, second with `_PART2` suffix. Keeps the unique index on (day, period, class, section) intact
+- **Teacher busy tracking in memory:** `Map<teacherId, Map<day, Set<period>>>` rebuilt each generate call — fast enough for 40 class-sections
+- **Switch component inline:** shadcn/ui didn't include Switch; built a simple accessible one in 30 lines
+
+---
+
+## Session — 2026-05-16 (Exams Module — Layer 7 Batch Scheduling + UI)
+
+### Completed This Session
+
+#### Fixes applied at session start
+- [x] `useExam` alias added to `useExams.ts` (ExamDetailPage + MarksEntryPage imported it)
+- [x] `usePublishExam()` called with no args; `.mutate(examId)` — was `usePublishExam(examId!)` (wrong)
+- [x] `apps/web/src/components/ui/textarea.tsx` — new shadcn Textarea component
+- [x] `apps/web/src/components/ui/tooltip.tsx` — new Tooltip (installed `@radix-ui/react-tooltip`)
+- [x] `neuracoin_balance: number` added to `StudentDetail` (api + web types)
+- [x] `StudentRepository.findByNeuraId` — added `neuracoin_balance` to select + return
+- [x] `StudentProfilePage` — NeuraCoinBadge displayed next to NeuraID in profile header
+
+#### Migration 018 (`20260515000018_exam_batch_scheduling.sql`) — PUSHED
+- [x] `exam_subjects`: `ADD COLUMN exam_date DATE`
+- [x] `exams`: `ADD COLUMN schedule_type TEXT NOT NULL DEFAULT 'INDIVIDUAL'` with CHECK constraint
+
+#### `packages/shared/src/types/database.ts` (updated)
+- [x] `exam_subjects` Row/Insert/Update: added `exam_date: string | null`
+- [x] `exams` Row/Insert/Update: added `schedule_type: string`
+
+#### `apps/api/src/types/common.ts` (appended)
+- [x] `exam_date: string | null` to `ExamSubject`
+- [x] `class_range: string | null` + `schedule_type: 'INDIVIDUAL' | 'BATCH'` to `ExamSummary`
+- [x] `exam_date?: string | null` + `schedule_type?: 'INDIVIDUAL' | 'BATCH'` to `CreateExamInput`
+- [x] New interfaces: `BatchSubjectSlot`, `BatchClassSection`, `BatchPrepareResult`
+
+#### `apps/web/src/types/common.ts` (same additions mirrored)
+
+#### `apps/api/src/repositories/syllabus.repository.ts` (extended)
+- [x] SA1 chapter logic fixed: `slice(0, ceil(n * 0.5))` — first 50% of chapters (was taking first 25% incorrectly)
+- [x] `getSubjectsForGrade(board, grade, correlationId)` — queries `cs_textbooks` DISTINCT subject for board+grade
+- [x] `getClassSections(schoolId, academicYearId, classFrom, classTo, correlationId)` — queries `student_yearly_progress` with JS-level deduplication
+
+#### `apps/api/src/repositories/exam.repository.ts` (extended)
+- [x] `createExam`: inserts `schedule_type`, passes `exam_date` per subject row
+- [x] `listExams`: selects `class_year` from exam_subjects, computes `class_range` ("7" or "6-10") in JS
+- [x] `getExamById`: added `exam_date` to exam_subjects select
+
+#### `apps/api/src/services/exam.service.ts` (extended)
+- [x] `BOARD_EXAM_DEFAULTS` map (SCERT_AP, SCERT_TS, CBSE) with per-exam-type max/pass
+- [x] `getBoardDefaults(board, examType)` helper
+- [x] `getWorkingDays(start, end)` — returns all Mon–Fri dates in range
+- [x] `prepareBatch(...)` — gets sections from syllabus repo, gets subjects per grade, assigns sequential working days round-robin, auto-selects chapters, returns `BatchPrepareResult`
+
+#### `apps/api/src/routes/exams.ts` (extended)
+- [x] `BatchPrepareQuerySchema` — board, class_from, class_to, exam_type, start_date, end_date
+- [x] `exam_date` field in `ExamSubjectInputSchema`
+- [x] `schedule_type` in `CreateExamSchema`
+- [x] `GET /api/v1/exams/batch/prepare` route (before `/:examId` routes to avoid param conflict)
+- [x] `GET /api/v1/exams/subjects` route
+
+#### `apps/web/src/hooks/useExams.ts` (extended)
+- [x] `export const useExam = useExamDetail` alias
+- [x] `useBatchPrepare()` — `useMutation` calling GET `/exams/batch/prepare`
+- [x] `useSubjectsForGrade(board, grade)` — `useQuery` hitting `/exams/subjects`
+
+#### `apps/web/src/pages/Exams/ExamsPage.tsx` (updated)
+- [x] `ClassRangeChip` component — shows class_range as a pill ("Class 7–10")
+- [x] "Classes" column added between "Exam" name and "Subjects" count
+
+#### `apps/web/src/pages/Exams/components/CreateExamModal.tsx` (full rewrite)
+- [x] **Mode selection screen**: two cards — Individual (User icon, blue) and Batch/School-wide (LayoutGrid, teal)
+- [x] **Individual mode**: unchanged 3-step flow (Details → Subjects → Review → Success)
+  - Grade dropdown rendered first, then Section, then dynamic Subject (from `useSubjectsForGrade`)
+  - `makeDefaultRow()` helper correctly maps `{max, pass}` → `{max_marks, pass_marks}` — default marks fill on mount
+- [x] **Batch mode**: 3-step flow (Batch Setup → Gantt → Review → Success)
+  - Step 0: same details form + "From Class / To Class" dropdowns + info banner; "Generate Schedule" calls `useBatchPrepare` with loading state, advances to Gantt only on API success
+  - Step 1: `BatchGanttStep` embedded; Dialog widens to `max-w-[95vw]`
+  - Step 2: `BatchReviewStep` — 3 KPI chips (sections / subjects / total exams) + per-section subject+date list
+- [x] **Back navigation**: step 0 shows "Change Mode" button returning to mode selection
+- [x] **Batch submit**: flattens `batchSections` → flat `ExamSubjectInput[]`, sends `schedule_type: 'BATCH'`
+
+#### `apps/web/src/pages/Exams/components/BatchGanttStep.tsx` (new)
+- [x] HTML5 drag & drop — `draggable` on `SubjectBlock`, `onDragOver`/`onDrop` on date cells
+- [x] `ChapterPanel` — floating panel on block click; reads chapters via `useChapters(board, grade, subject)`; grade bug fixed (was passing `undefined`)
+- [x] `SubjectBlock` — color-coded pills from `SUBJECT_COLORS` map + fallback `PALETTE`
+- [x] Gantt table: sticky left column (class labels), date columns with formatted day/month/dow headers
+- [x] Grade-level collapse rows with ChevronUp/Down toggle
+- [x] Legend strip showing subject abbreviations with colors
+- [x] Warning banner for subjects outside date range
+
+### TypeScript
+- API: 0 errors ✅
+- Web: 0 errors ✅
+
+### Tests
+- 130/130 passing ✅
+
+### Key Design Decisions This Session
+- **Two scheduling modes in one modal:** Mode selection as the entry screen rather than a separate page/route. Dialog widens dynamically for the Gantt step. Keeps the workflow cohesive — principal sees one "Schedule Exam" button everywhere.
+- **Batch date assignment — subjects not classes:** All unique subjects sorted alphabetically, each gets one working day, same day used across all sections for that subject. Standard Indian school FA/SA pattern — all of Class 6-10 writes Mathematics on the same day.
+- **SA1 chapter selection fixed:** Was `slice(0, ceil(n * 0.25))` (first 25%). Correct is `slice(0, ceil(n * 0.5))` (first 50% = FA1 + FA2 cumulative scope).
+- **class_range computed in JS not SQL:** `listExams` fetches `class_year` from exam_subjects, groups in-memory. Avoids a complex ARRAY_AGG + min/max SQL query that would be hard to test.
+- **Grade passed to ChapterPanel:** ChapterPanel in BatchGanttStep was calling `useChapters(board, undefined, subject)` — query was never enabled. Fixed by passing `grade={sec.class_year}` from the section row context.
+
+### Bugs Fixed This Session
+| Bug | Root Cause | Fix |
+|-----|-----------|-----|
+| Default marks not filling on open | `makeDefaultRow` spread `{max, pass}` into fields expecting `{max_marks, pass_marks}` | Explicit mapping in `makeDefaultRow` |
+| `useExam` not found in ExamDetailPage | No alias exported | Added `export const useExam = useExamDetail` |
+| `usePublishExam(examId!)` TS error | Hook takes no args; examId goes to `.mutate()` | Fixed both call site and mutate call |
+| ChapterPanel chapters never load in Gantt | `useChapters(board, undefined, subject)` — `enabled: !!board && !!grade && !!subject` was false | Pass `grade={sec.class_year}` from section row |
+| `Button` unused import in BatchGanttStep | Left over from scaffolding | Removed |
+| `onDragStart` type mismatch | Prop type `(ri, si) => void` but passed `setDragSrc` (Dispatch) | Wrapped: `(ri, si2) => setDragSrc({ rowIdx: ri, subIdx: si2 })` |
 
 ---
 
@@ -878,6 +1167,16 @@ Note: attendance 0% because demo seed has no attendance rows for today (2026-05-
 | **E-Library skill** | **`.claude/commands/e-library.md`** — `/project:e-library` for mobile build |
 | **Content generation brief** | **`docs/specs/content_generation_skill.md`** — per-segment prompt guidance |
 | **Content layer spec** | **`docs/specs/NeuraLife — Content Layer.md`** — PRAJNA, NeuraCoins, segment order |
+| **Exam routes** | **`apps/api/src/routes/exams.ts`** — 14 routes incl. batch/prepare + subjects |
+| **Exam service** | **`apps/api/src/services/exam.service.ts`** — prepareBatch, createExam, publish |
+| **Exam repository** | **`apps/api/src/repositories/exam.repository.ts`** — createExam with exam_date, listExams with class_range |
+| **Syllabus repository** | **`apps/api/src/repositories/syllabus.repository.ts`** — getSubjectsForGrade, getClassSections, autoSelectChapters |
+| **Exam tests** | **`apps/api/tests/routes/exams.test.ts`** — 32 tests |
+| **Exams list page** | **`apps/web/src/pages/Exams/ExamsPage.tsx`** — class_range column |
+| **Create exam modal** | **`apps/web/src/pages/Exams/components/CreateExamModal.tsx`** — Individual + Batch modes |
+| **Batch Gantt** | **`apps/web/src/pages/Exams/components/BatchGanttStep.tsx`** — drag-drop schedule |
+| **Exam hooks** | **`apps/web/src/hooks/useExams.ts`** — useBatchPrepare, useSubjectsForGrade |
+| **Exam defaults** | **`apps/web/src/lib/examDefaults.ts`** — BOARDS_LIST, getDefaultMarks, buildExamName |
 | **Content Studio types** | **`apps/web/src/pages/ContentStudio/types.ts`** — SEGMENT_ORDER, YoutubeVideoItem, InteractionContent |
 | **Content Studio routes** | **`apps/api/src/routes/content-studio.ts`** — buildBatch1Prompt, buildSvgPrompt, buildCssPrompt, buildProblemsPrompt |
 | Auth store (web) | `apps/web/src/store/authStore.ts` |
