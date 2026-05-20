@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, GraduationCap, CalendarCheck, FileText,
   IndianRupee, Wallet, Tablet, BarChart3, Globe2, Settings2,
-  ChevronLeft, ChevronRight, CalendarRange,
+  ChevronLeft, ChevronRight, CalendarRange, Bookmark,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
 import { useSchool } from '@/hooks/useSchool'
 import type { SchoolSummary } from '@/hooks/useSchool'
+import { useBookmarks } from '@/hooks/useBookmarks'
 
 type BadgeKey = keyof Pick<
   SchoolSummary,
@@ -48,6 +49,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const { pathname } = useLocation()
   const { school_name: authSchoolName, school_logo_url } = useAuthStore()
   const { data: summary } = useSchool()
+  const { data: bookmarks } = useBookmarks()
 
   const schoolName = authSchoolName || summary.school_name
   const schoolLogo = school_logo_url || summary.school_logo_url
@@ -143,6 +145,59 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             </Link>
           )
         })}
+
+        {/* Bookmarks section */}
+        {bookmarks && bookmarks.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-border mx-2">
+            <AnimatePresence>
+              {!isCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="px-2 mb-1"
+                >
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                    Bookmarks
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {bookmarks.map((bookmark) => {
+              const active = pathname === bookmark.url || pathname.startsWith(bookmark.url + '/')
+              return (
+                <Link key={bookmark.id} to={bookmark.url}>
+                  <div
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-2 rounded-lg relative',
+                      'border-l-[3px] transition-colors duration-150',
+                      active
+                        ? 'border-l-amber-400 bg-amber-50 text-amber-600'
+                        : 'border-l-transparent text-slate-500 hover:bg-slate-100',
+                    )}
+                  >
+                    <Bookmark className="h-4 w-4 flex-shrink-0 text-amber-400" />
+                    <AnimatePresence>
+                      {!isCollapsed && (
+                        <motion.span
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="text-xs font-medium whitespace-nowrap overflow-hidden"
+                        >
+                          {bookmark.title}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </nav>
 
       {/* Bottom section */}

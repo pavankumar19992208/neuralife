@@ -1,0 +1,412 @@
+
+<h2 class="sr-only">NeuraLife Teacher Mobile App — interactive mockup showing all screens for both Subject Teacher and Class Teacher roles including home, schedule, attendance, performance, student detail, PTM mode, homework, doubts, and messaging</h2>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body-wrap{display:block}
+.wrap{padding:12px 0;display:flex;flex-direction:column;gap:14px}
+.pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11px;padding:5px 12px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.pill.on{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.frame{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:10px;display:flex;flex-direction:column;gap:0}
+.phone{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.topbar{padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.topbar-sub{font-size:10px;color:var(--color-text-secondary)}
+.screen{padding:12px;display:none;flex-direction:column;gap:10px;min-height:480px}
+.screen.on{display:flex}
+.lbl{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.7px;margin-top:2px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px}
+.card-t{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.card-s{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.mv{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.ml{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.badge{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500;white-space:nowrap}
+.b-g{background:var(--color-background-success);color:var(--color-text-success)}
+.b-a{background:var(--color-background-warning);color:var(--color-text-warning)}
+.b-r{background:var(--color-background-danger);color:var(--color-text-danger)}
+.b-b{background:var(--color-background-info);color:var(--color-text-info)}
+.b-n{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.period{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary)}
+.period.now{border-color:var(--color-border-info);background:var(--color-background-info)}
+.period.done{opacity:.55}
+.pt{font-size:10px;color:var(--color-text-secondary);min-width:52px;flex-shrink:0}
+.pi{flex:1}
+.pn{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.ps{font-size:10px;color:var(--color-text-secondary);margin-top:1px}
+.alert-c{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:2px solid}
+.alert-c.hi{border-color:#E24B4A}
+.alert-c.md{border-color:#EF9F27}
+.at{font-size:11px;color:var(--color-text-primary);line-height:1.4}
+.asub{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.av{width:30px;height:30px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--color-text-info);flex-shrink:0}
+.srow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.srow:last-child{border-bottom:none}
+.si{flex:1}
+.sn{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.ss{font-size:10px;color:var(--color-text-secondary);margin-top:1px}
+.bar-w{background:var(--color-background-secondary);border-radius:99px;height:4px;width:56px;overflow:hidden}
+.bar-f{height:100%;border-radius:99px}
+.att-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.att-dot{height:34px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.att-dot.p{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success)}
+.att-dot.a{background:var(--color-background-danger);color:var(--color-text-danger);border-color:var(--color-border-danger)}
+.att-dot.l{background:var(--color-background-warning);color:var(--color-text-warning);border-color:var(--color-border-warning)}
+.ai-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:11px;color:var(--color-text-secondary);line-height:1.6}
+.msg-b{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 11px;font-size:12px;color:var(--color-text-primary);max-width:80%;line-height:1.5}
+.msg-b.out{background:var(--color-background-info);color:var(--color-text-info);align-self:flex-end}
+.msg-row{display:flex;flex-direction:column;gap:6px}
+.tab-bar{display:flex;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.tab{flex:1;padding:9px 4px;text-align:center;cursor:pointer;font-size:10px;color:var(--color-text-secondary)}
+.tab.on{color:var(--color-text-info);font-weight:500}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:2px 0}
+.sync-bar{font-size:10px;color:var(--color-text-warning);background:var(--color-background-warning);padding:4px 12px;text-align:center}
+.ptm-head{background:var(--color-background-info);padding:14px;text-align:center}
+.ptm-name{font-size:16px;font-weight:500;color:var(--color-text-info)}
+.ptm-sub{font-size:11px;color:var(--color-text-info);opacity:.8;margin-top:3px}
+.subj-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.subj-row:last-child{border-bottom:none}
+.subj-name{font-size:12px;color:var(--color-text-secondary);flex:1}
+.doubt-card{padding:9px 11px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:2px solid var(--color-border-warning)}
+.doubt-t{font-size:12px;color:var(--color-text-primary);line-height:1.4}
+.doubt-s{font-size:10px;color:var(--color-text-secondary);margin-top:3px}
+.doubt-actions{display:flex;gap:6px;margin-top:6px}
+.dbt{font-size:10px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+.hw-card{padding:10px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary)}
+.hw-t{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.hw-s{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.prog-bar{background:var(--color-background-secondary);border-radius:99px;height:5px;margin-top:7px;overflow:hidden}
+.prog-f{height:100%;border-radius:99px;background:#1D9E75}
+.input-row{display:flex;gap:6px;align-items:center;border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;margin-top:4px}
+.msg-input{flex:1;font-size:12px;padding:7px 10px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary)}
+.send-btn{font-size:11px;padding:7px 12px;border-radius:99px;border:none;background:var(--color-background-info);color:var(--color-text-info);cursor:pointer;font-weight:500}
+</style>
+
+<div class="wrap">
+
+<div class="pill-row" id="pills">
+  <button class="pill on" onclick="go('home')">Home</button>
+  <button class="pill" onclick="go('schedule')">Schedule</button>
+  <button class="pill" onclick="go('attend')">Attendance</button>
+  <button class="pill" onclick="go('perf')">Performance</button>
+  <button class="pill" onclick="go('student')">Student detail</button>
+  <button class="pill" onclick="go('ptm')">PTM mode</button>
+  <button class="pill" onclick="go('hw')">Homework</button>
+  <button class="pill" onclick="go('doubts')">Doubts</button>
+  <button class="pill" onclick="go('msg')">Messaging</button>
+</div>
+
+<div class="frame">
+<div class="phone">
+
+<div class="topbar">
+  <div>
+    <div class="topbar-title" id="top-title">NeuraLife</div>
+    <div class="topbar-sub" id="top-sub">K. Ramesh · Subject + Class Teacher · 10-A</div>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <span class="badge b-b" style="font-size:9px">Class Teacher</span>
+    <span class="badge b-n" style="font-size:9px">Offline: 2 pending</span>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen on" id="s-home">
+  <div class="lbl">Mon, Sep 1 · overview</div>
+  <div class="g2">
+    <div class="metric"><div class="mv">5</div><div class="ml">Periods today</div></div>
+    <div class="metric"><div class="mv" style="color:var(--color-text-danger)">3</div><div class="ml">Absent (my class)</div></div>
+  </div>
+  <div class="g2">
+    <div class="metric"><div class="mv">82%</div><div class="ml">Class mastery</div></div>
+    <div class="metric"><div class="mv" style="color:var(--color-text-warning)">5</div><div class="ml">At-risk students</div></div>
+  </div>
+  <div class="g2">
+    <div class="metric"><div class="mv">7</div><div class="ml">Doubts pending</div></div>
+    <div class="metric"><div class="mv" style="color:var(--color-text-warning)">2</div><div class="ml">Leave requests</div></div>
+  </div>
+  <div class="lbl">Today's schedule</div>
+  <div class="period done"><div class="pt">8:00–8:45</div><div class="pi"><div class="pn">Mathematics</div><div class="ps">Class 10-A · 42 students</div></div><span class="badge b-n">Done</span></div>
+  <div class="period now"><div class="pt">8:45–9:30</div><div class="pi"><div class="pn">Mathematics</div><div class="ps">Class 9-B · 39 students</div></div><span class="badge b-b">Now</span></div>
+  <div class="period"><div class="pt">10:00–10:45</div><div class="pi"><div class="pn">Science</div><div class="ps">Class 8-A · 41 students</div></div><span class="badge b-n">Next</span></div>
+  <div class="lbl">Alerts</div>
+  <div class="alert-c hi"><div style="flex:1"><div class="at">Arun Reddy's SmartPad inactive 4 days — escalated from principal</div><div class="asub">24h escalation · tap to act</div></div></div>
+  <div class="alert-c md"><div style="flex:1"><div class="at">3 students in 10-A below 40% mastery in Telugu</div><div class="asub">AI flagged · yesterday</div></div></div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="screen" id="s-schedule">
+  <div class="lbl">Weekly schedule · K. Ramesh</div>
+  <div style="display:flex;gap:5px;margin-bottom:2px">
+    <span class="badge b-b">Mon</span>
+    <span class="badge b-n">Tue</span><span class="badge b-n">Wed</span><span class="badge b-n">Thu</span><span class="badge b-n">Fri</span><span class="badge b-n">Sat</span>
+  </div>
+  <div class="period done"><div class="pt">8:00–8:45</div><div class="pi"><div class="pn">Mathematics · 10-A</div><div class="ps">Chapter 4 — Quadratic Equations · Covered ✓</div></div></div>
+  <div class="period now"><div class="pt">8:45–9:30</div><div class="pi"><div class="pn">Mathematics · 9-B</div><div class="ps">Chapter 3 — Polynomials · In progress</div></div><span class="badge b-b">Now</span></div>
+  <div class="period"><div class="pt">10:00–10:45</div><div class="pi"><div class="pn">Science · 8-A</div><div class="ps">Chapter 5 — Force & Laws · Due today</div></div></div>
+  <div class="period"><div class="pt">11:30–12:15</div><div class="pi"><div class="pn">Mathematics · 8-A</div><div class="ps">Chapter 3 — Rational Numbers</div></div></div>
+  <div class="period"><div class="pt">1:45–2:30</div><div class="pi"><div class="pn">Science · 9-B</div><div class="ps">Chapter 4 — Atoms & Molecules</div></div></div>
+  <div class="lbl">Syllabus coverage · this week</div>
+  <div class="card">
+    <div class="row" style="margin-bottom:6px"><span class="card-t">Mathematics · 10-A</span><span class="badge b-g">On track</span></div>
+    <div style="font-size:11px;color:var(--color-text-secondary)">Chapter 4 of 15 · 68% of term plan covered</div>
+    <div class="prog-bar"><div class="prog-f" style="width:68%"></div></div>
+  </div>
+  <div class="card">
+    <div class="row" style="margin-bottom:6px"><span class="card-t">Science · 8-A</span><span class="badge b-a">1 week behind</span></div>
+    <div style="font-size:11px;color:var(--color-text-secondary)">Chapter 4 of 15 · 41% of term plan covered</div>
+    <div class="prog-bar"><div class="prog-f" style="width:41%;background:#EF9F27"></div></div>
+  </div>
+</div>
+
+<!-- ATTENDANCE -->
+<div class="screen" id="s-attend">
+  <div class="lbl">Mark attendance</div>
+  <div class="card">
+    <div class="row"><div><div class="card-t">Class 10-A · Sep 1 · 8:00 AM</div><div class="card-s">Mathematics · Signed by K. Ramesh</div></div><span class="badge b-g">38/42</span></div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;font-size:11px;color:var(--color-text-secondary)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--color-background-success);display:inline-block"></span>Present</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--color-background-danger);display:inline-block"></span>Absent</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--color-background-warning);display:inline-block"></span>Late</span>
+  </div>
+  <div class="att-grid">
+    <div class="att-dot p">RK</div><div class="att-dot p">PS</div><div class="att-dot p">MR</div>
+    <div class="att-dot a" onclick="this.className='att-dot l'">AR</div><div class="att-dot p">SN</div><div class="att-dot p">VK</div>
+    <div class="att-dot p">DL</div><div class="att-dot p">KP</div><div class="att-dot a">BT</div>
+    <div class="att-dot p">LR</div><div class="att-dot p">NG</div><div class="att-dot p">SK</div>
+    <div class="att-dot p">RP</div><div class="att-dot l">TS</div><div class="att-dot p">MV</div>
+    <div class="att-dot p">KN</div><div class="att-dot p">PB</div><div class="att-dot a">SR</div>
+    <div class="att-dot p">GR</div><div class="att-dot p">NM</div><div class="att-dot p">AP</div>
+    <div class="att-dot p">VR</div><div class="att-dot p">SS</div><div class="att-dot p">PV</div>
+  </div>
+  <div style="font-size:10px;color:var(--color-text-secondary);background:var(--color-background-secondary);padding:7px 10px;border-radius:var(--border-radius-md)">Tap to toggle. Tap absent again for Late. Digitally signed on submit.</div>
+  <div style="background:var(--color-background-warning);color:var(--color-text-warning);font-size:11px;padding:8px 12px;border-radius:var(--border-radius-md)">Correction: AR marked Absent at 8:05 AM. Tap to update to Late Arrival.</div>
+  <button onclick="sendPrompt('How does the digital signature and audit trail work for attendance?')" style="width:100%;padding:9px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info);font-size:12px;cursor:pointer;font-weight:500">Submit attendance ↗</button>
+</div>
+
+<!-- PERFORMANCE -->
+<div class="screen" id="s-perf">
+  <div class="lbl">Class performance · my subjects</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">
+    <span class="badge b-b">Class 10-A</span>
+    <span class="badge b-n">9-B</span>
+    <span class="badge b-n">8-A</span>
+  </div>
+  <div class="card" style="padding:10px 12px">
+    <div class="row" style="margin-bottom:8px"><span class="card-t">Mathematics · 10-A</span><span class="badge b-g">82% avg</span></div>
+    <div class="subj-row"><span class="subj-name">SmartPad activity</span><div class="bar-w"><div class="bar-f" style="width:82%;background:#1D9E75"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">82%</span></div>
+    <div class="subj-row"><span class="subj-name">Homework rate</span><div class="bar-w"><div class="bar-f" style="width:91%;background:#378ADD"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">91%</span></div>
+    <div class="subj-row"><span class="subj-name">Unit test avg</span><div class="bar-w"><div class="bar-f" style="width:78%;background:#378ADD"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">78%</span></div>
+    <div class="subj-row"><span class="subj-name">Exam avg</span><div class="bar-w"><div class="bar-f" style="width:81%;background:#378ADD"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">81%</span></div>
+  </div>
+  <div class="lbl">Students needing attention · 10-A</div>
+  <div class="card" style="padding:10px 12px">
+    <div class="srow"><div class="av">AR</div><div class="si"><div class="sn">Arun Reddy</div><div class="ss">Pad inactive · algebra gap</div></div><span class="badge b-r">31%</span></div>
+    <div class="srow"><div class="av">BT</div><div class="si"><div class="sn">Bhavana T.</div><div class="ss">Carry-error pattern detected</div></div><span class="badge b-a">38%</span></div>
+    <div class="srow"><div class="av">SR</div><div class="si"><div class="sn">Suresh Rao</div><div class="ss">Absent 3 days</div></div><span class="badge b-a">42%</span></div>
+  </div>
+  <div class="lbl">Topic gaps · class 10-A</div>
+  <div class="card" style="padding:10px 12px">
+    <div class="srow"><div class="si"><div class="sn">Subtraction with borrowing</div><div class="ss">12 students struggling</div></div><span class="badge b-r">High</span></div>
+    <div class="srow"><div class="si"><div class="sn">Quadratic factorisation</div><div class="ss">7 students struggling</div></div><span class="badge b-a">Med</span></div>
+    <div class="srow"><div class="si"><div class="sn">Word problems</div><div class="ss">5 students struggling</div></div><span class="badge b-n">Low</span></div>
+  </div>
+</div>
+
+<!-- STUDENT DETAIL (class teacher 360) -->
+<div class="screen" id="s-student">
+  <div class="lbl">Student 360° · class teacher view</div>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div class="av" style="width:36px;height:36px;font-size:12px">RK</div>
+      <div style="flex:1"><div class="card-t">Ravi Kumar</div><div class="card-s">Class 10-A · NID-2025-AP-084291</div></div>
+      <span class="badge b-g">84%</span>
+    </div>
+    <div class="g2">
+      <div class="metric"><div class="mv">94%</div><div class="ml">Attendance</div></div>
+      <div class="metric"><div class="mv" style="color:var(--color-text-success)">↑ 12%</div><div class="ml">This month</div></div>
+    </div>
+  </div>
+  <div class="lbl">All-subject mastery</div>
+  <div class="card" style="padding:10px 12px">
+    <div class="subj-row"><span class="subj-name">Mathematics</span><div class="bar-w"><div class="bar-f" style="width:82%;background:#1D9E75"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">82%</span></div>
+    <div class="subj-row"><span class="subj-name">Science</span><div class="bar-w"><div class="bar-f" style="width:74%;background:#378ADD"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">74%</span></div>
+    <div class="subj-row"><span class="subj-name">English</span><div class="bar-w"><div class="bar-f" style="width:68%;background:#378ADD"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">68%</span></div>
+    <div class="subj-row"><span class="subj-name">Telugu</span><div class="bar-w"><div class="bar-f" style="width:38%;background:#E24B4A"></div></div><span style="font-size:11px;color:var(--color-text-danger);min-width:28px;text-align:right">38%</span></div>
+    <div class="subj-row"><span class="subj-name">Social Studies</span><div class="bar-w"><div class="bar-f" style="width:59%;background:#EF9F27"></div></div><span style="font-size:11px;color:var(--color-text-primary);min-width:28px;text-align:right">59%</span></div>
+  </div>
+  <div class="lbl">Writing skills</div>
+  <div class="card" style="padding:10px 12px">
+    <div class="subj-row"><span class="subj-name">Handwriting clarity</span><span style="font-size:11px;color:var(--color-text-primary)">74/100 ↑</span></div>
+    <div class="subj-row"><span class="subj-name">Writing speed</span><span style="font-size:11px;color:var(--color-text-primary)">18 wpm →</span></div>
+    <div class="subj-row"><span class="subj-name">Spelling accuracy</span><span style="font-size:11px;color:var(--color-text-success)">81% ↑</span></div>
+    <div class="subj-row"><span class="subj-name">Sentence formation</span><span style="font-size:11px;color:var(--color-text-info)">Proficient</span></div>
+    <div class="subj-row"><span class="subj-name">Participation score</span><span style="font-size:11px;color:var(--color-text-primary)">4.2/5 monthly</span></div>
+  </div>
+  <div class="lbl">AI insight</div>
+  <div class="ai-box">Ravi performs well overall. Strongest in Maths at 82%. Telugu at 38% has declined 3 weeks — needs attention. Spelling and writing speed both improving. Attendance excellent at 94%.</div>
+  <button onclick="go('ptm')" style="width:100%;padding:9px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info);font-size:12px;cursor:pointer;font-weight:500">Open PTM mode for Ravi ↗</button>
+</div>
+
+<!-- PTM MODE -->
+<div class="screen" id="s-ptm">
+  <div class="ptm-head" style="margin:-12px -12px 0;border-radius:0">
+    <div style="font-size:10px;color:var(--color-text-info);opacity:.7;margin-bottom:4px">PARENT-TEACHER MEETING</div>
+    <div class="ptm-name">Ravi Kumar</div>
+    <div class="ptm-sub">Class 10-A · Vikas High School · Sep 1, 2025</div>
+    <div style="font-size:9px;color:var(--color-text-info);opacity:.6;margin-top:6px">Powered by NeuraLife</div>
+  </div>
+  <div class="lbl">Attendance this term</div>
+  <div class="g2">
+    <div class="metric"><div class="mv">94%</div><div class="ml">Attendance rate</div></div>
+    <div class="metric"><div class="mv">2</div><div class="ml">Days absent</div></div>
+  </div>
+  <div class="lbl">Subject mastery</div>
+  <div class="card" style="padding:10px 12px">
+    <div class="subj-row"><span class="subj-name">Mathematics</span><span class="badge b-g">82% ↑</span></div>
+    <div class="subj-row"><span class="subj-name">Science</span><span class="badge b-b">74% →</span></div>
+    <div class="subj-row"><span class="subj-name">English</span><span class="badge b-b">68% ↑</span></div>
+    <div class="subj-row"><span class="subj-name">Telugu</span><span class="badge b-r">38% ↓</span></div>
+    <div class="subj-row"><span class="subj-name">Social Studies</span><span class="badge b-a">59% →</span></div>
+  </div>
+  <div class="lbl">Writing skills</div>
+  <div class="card" style="padding:10px 12px">
+    <div class="subj-row"><span class="subj-name">Handwriting clarity</span><span style="font-size:11px;color:var(--color-text-primary)">74/100</span></div>
+    <div class="subj-row"><span class="subj-name">Spelling accuracy</span><span style="font-size:11px;color:var(--color-text-success)">81%</span></div>
+    <div class="subj-row"><span class="subj-name">Participation</span><span style="font-size:11px;color:var(--color-text-primary)">4.2/5</span></div>
+  </div>
+  <div class="lbl">AI summary for parent</div>
+  <div class="ai-box">Ravi is performing well overall. His strongest subject is Mathematics. Telugu needs focused attention — mastery has dropped to 38% over 3 weeks. Writing and spelling are improving. Attendance is excellent. Recommended focus: Telugu vocabulary practice daily.</div>
+  <button onclick="sendPrompt('Generate PTM PDF report for Ravi Kumar with school branding')" style="width:100%;padding:9px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-success);background:var(--color-background-success);color:var(--color-text-success);font-size:12px;cursor:pointer;font-weight:500">Generate & share PTM report PDF ↗</button>
+</div>
+
+<!-- HOMEWORK -->
+<div class="screen" id="s-hw">
+  <div class="lbl">Active assignments</div>
+  <div class="hw-card">
+    <div class="row"><div class="hw-t">Ch 4 Practice Problems</div><span class="badge b-b">Due today</span></div>
+    <div class="hw-s">Maths · Class 10-A · 42 students</div>
+    <div class="prog-bar"><div class="prog-f" style="width:74%"></div></div>
+    <div style="font-size:10px;color:var(--color-text-secondary);margin-top:4px">31 submitted · 4 late · 7 not submitted</div>
+    <button onclick="sendPrompt('Send reminder to parents of 7 students who have not submitted Chapter 4 homework')" style="margin-top:7px;font-size:10px;padding:5px 10px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary);cursor:pointer">Remind 7 parents ↗</button>
+  </div>
+  <div class="hw-card">
+    <div class="row"><div class="hw-t">Force & Laws — Reading</div><span class="badge b-n">Due Sep 3</span></div>
+    <div class="hw-s">Science · Class 8-A · 41 students</div>
+    <div class="prog-bar"><div class="prog-f" style="width:12%;background:#EF9F27"></div></div>
+    <div style="font-size:10px;color:var(--color-text-secondary);margin-top:4px">5 submitted · 36 pending</div>
+  </div>
+  <div class="lbl">Assign new homework</div>
+  <div class="card">
+    <div class="card-t" style="margin-bottom:6px">New assignment</div>
+    <select style="width:100%;margin-bottom:6px;font-size:12px;padding:6px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary)">
+      <option>Mathematics · Class 10-A</option>
+      <option>Mathematics · Class 9-B</option>
+      <option>Science · Class 8-A</option>
+    </select>
+    <input placeholder="Assignment title" style="width:100%;margin-bottom:6px;font-size:12px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary)">
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+      <span style="font-size:11px;color:var(--color-text-secondary)">Differentiated variant (AI)</span>
+      <input type="checkbox" checked>
+      <span style="font-size:10px;color:var(--color-text-secondary)">auto for at-risk</span>
+    </div>
+    <button onclick="sendPrompt('Publish this homework to all student SmartPads in Class 10-A')" style="width:100%;padding:8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info);font-size:12px;cursor:pointer;font-weight:500">Publish to SmartPads + Parent App ↗</button>
+  </div>
+</div>
+
+<!-- DOUBTS -->
+<div class="screen" id="s-doubts">
+  <div class="lbl">Doubt queue · 7 pending</div>
+  <div class="card" style="padding:9px 11px;border-left:2px solid #E24B4A;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0">
+    <div style="font-size:10px;color:var(--color-text-danger);font-weight:500;margin-bottom:3px">Common doubt · 6 students flagged this</div>
+    <div class="doubt-t">"I don't understand how to complete the square when the coefficient of x² is not 1"</div>
+    <div class="doubt-s">Maths · Ch 4 · Class 10-A · 9-B</div>
+    <div class="doubt-actions">
+      <button class="dbt" onclick="sendPrompt('Answer this common doubt about completing the square for students in Class 10-A')">Answer ↗</button>
+      <button class="dbt">Address in class</button>
+    </div>
+  </div>
+  <div class="doubt-card">
+    <div class="doubt-t">Ravi Kumar: "What is the difference between a monomial and a polynomial?"</div>
+    <div class="doubt-s">Maths · Ch 3 · Class 9-B · 1 student</div>
+    <div class="doubt-actions">
+      <button class="dbt" onclick="sendPrompt('Answer Ravi Kumar doubt about monomial vs polynomial')">Answer ↗</button>
+      <button class="dbt">Resolve</button>
+    </div>
+  </div>
+  <div class="doubt-card">
+    <div class="doubt-t">Priya Nair: "How do balanced and unbalanced forces differ in real life?"</div>
+    <div class="doubt-s">Science · Ch 5 · Class 8-A · 1 student</div>
+    <div class="doubt-actions">
+      <button class="dbt" onclick="sendPrompt('Answer Priya doubt about balanced vs unbalanced forces')">Answer ↗</button>
+      <button class="dbt">Resolve</button>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--color-text-secondary);text-align:center;padding:4px 0">Answers are pushed directly to student SmartPad</div>
+</div>
+
+<!-- MESSAGING -->
+<div class="screen" id="s-msg">
+  <div class="lbl">Messages</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">
+    <span class="badge b-b">Parent messages</span>
+    <span class="badge b-n">Teacher–teacher</span>
+  </div>
+  <div class="card" style="padding:9px 12px">
+    <div class="row" style="margin-bottom:2px"><span class="card-t">Ravi Kumar's parent</span><span style="font-size:10px;color:var(--color-text-secondary)">9:12 AM</span></div>
+    <div style="font-size:11px;color:var(--color-text-secondary)">Sir, Ravi will be absent tomorrow due to fever</div>
+  </div>
+  <div class="card" style="padding:9px 12px">
+    <div class="row" style="margin-bottom:2px"><span class="card-t">S. Lakshmi (English · 10-A)</span><span style="font-size:10px;color:var(--color-text-secondary)">Yesterday</span></div>
+    <div style="font-size:11px;color:var(--color-text-secondary)">Arun Reddy is also weak in English — same students overlapping</div>
+  </div>
+  <div class="lbl">Conversation · Ravi's parent</div>
+  <div class="msg-row" style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;min-height:130px">
+    <div class="msg-b">Sir, Ravi will be absent tomorrow due to fever</div>
+    <div class="msg-b out">Understood, please get well soon. I'll mark approved leave. Ensure he completes Chapter 4 when he returns.</div>
+    <div style="font-size:10px;color:var(--color-text-secondary);text-align:right;margin-top:2px">Delivered · 9:15 AM · All messages logged</div>
+  </div>
+  <div class="input-row">
+    <input class="msg-input" placeholder="Type a message...">
+    <button class="send-btn">Send</button>
+  </div>
+  <div style="font-size:10px;color:var(--color-text-secondary);text-align:center;margin-top:2px">All conversations visible to principal · school branded</div>
+</div>
+
+<div class="tab-bar" id="tabs">
+  <div class="tab on" onclick="go('home')">Home</div>
+  <div class="tab" onclick="go('schedule')">Schedule</div>
+  <div class="tab" onclick="go('perf')">Classes</div>
+  <div class="tab" onclick="go('student')">My Class</div>
+  <div class="tab" onclick="go('doubts')">Doubts</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const screens={home:'s-home',schedule:'s-schedule',attend:'s-attend',perf:'s-perf',student:'s-student',ptm:'s-ptm',hw:'s-hw',doubts:'s-doubts',msg:'s-msg'};
+const titles={home:'Home',schedule:'Schedule & Syllabus',attend:'Mark Attendance · 10-A',perf:'Class Performance',student:'Student 360° · Ravi Kumar',ptm:'PTM Mode · Ravi Kumar',hw:'Homework',doubts:'Doubt Queue',msg:'Messaging'};
+const subs={home:'K. Ramesh · Subject + Class Teacher · 10-A',schedule:'Weekly timetable',attend:'Sep 1 · Maths · Digitally signed',perf:'Subject teacher view',student:'Class teacher view',ptm:'Presentation mode',hw:'Assignments',doubts:'SmartPad doubt queue',msg:'Parent & teacher comms'};
+function go(id){
+  Object.keys(screens).forEach(k=>{
+    const el=document.getElementById(screens[k]);
+    if(el)el.style.display='none';
+    const p=document.querySelector('#pills .pill:nth-child('+(Object.keys(screens).indexOf(k)+1)+')');
+    if(p)p.classList.remove('on');
+  });
+  const el=document.getElementById(screens[id]);
+  if(el)el.style.display='flex';
+  document.getElementById('top-title').textContent=titles[id]||id;
+  document.getElementById('top-sub').textContent=subs[id]||'';
+  const idx=Object.keys(screens).indexOf(id);
+  document.querySelectorAll('#pills .pill').forEach((p,i)=>p.classList.toggle('on',i===idx));
+  const tabMap={home:0,schedule:1,attend:1,perf:2,student:3,ptm:3,hw:2,doubts:4,msg:4};
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i===tabMap[id]));
+}
+</script>

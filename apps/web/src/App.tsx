@@ -23,8 +23,13 @@ const FeesPage            = lazy(() => import('@/pages/Fees/FeesPage'))
 const FeeAnalyticsPage    = lazy(() => import('@/pages/Fees/FeeAnalyticsPage'))
 const SalaryPage     = lazy(() => import('@/pages/Salary/SalaryPage'))
 const FleetPage      = lazy(() => import('@/pages/Fleet/FleetPage'))
-const AnalyticsPage  = lazy(() => import('@/pages/Analytics/AnalyticsPage'))
-const SpherePage     = lazy(() => import('@/pages/Sphere/SpherePage'))
+const AnalyticsPage          = lazy(() => import('@/pages/Analytics/AnalyticsPage'))
+const ClassAnalyticsPage     = lazy(() => import('@/pages/Analytics/ClassAnalyticsPage'))
+const SectionAnalyticsPage   = lazy(() => import('@/pages/Analytics/SectionAnalyticsPage'))
+const StudentAnalyticsPage   = lazy(() => import('@/pages/Analytics/StudentAnalyticsPage'))
+const BoardResultsPage       = lazy(() => import('@/pages/Analytics/BoardResultsPage'))
+const SharedAnalyticsPage    = lazy(() => import('@/pages/Analytics/SharedAnalyticsPage'))
+const SpherePage     = lazy(() => import('@/pages/NeuraSphere/SpherePage'))
 const SettingsPage        = lazy(() => import('@/pages/Settings/SettingsPage'))
 const ContentStudioPage   = lazy(() => import('@/pages/ContentStudio/ContentStudioPage'))
 const TimetablePage       = lazy(() => import('@/pages/Timetable/TimetablePage'))
@@ -139,13 +144,33 @@ export default function App() {
               </ProtectedRoute>
             } />
             <Route path="/fleet" element={
-              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL]}>
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN]}>
                 <FleetPage />
               </ProtectedRoute>
             } />
             <Route path="/analytics" element={
               <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL]}>
                 <AnalyticsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics/class/:classYear" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN]}>
+                <ClassAnalyticsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics/section/:classYear/:section" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN]}>
+                <SectionAnalyticsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics/student/:neuraId" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL, UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
+                <StudentAnalyticsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics/board-results" element={
+              <ProtectedRoute allowedRoles={[UserRole.PRINCIPAL]}>
+                <BoardResultsPage />
               </ProtectedRoute>
             } />
             <Route path="/sphere" element={
@@ -168,6 +193,9 @@ export default function App() {
 
         {/* Content Studio — standalone, no AppShell */}
         <Route path="/content-studio" element={<ContentStudioPage />} />
+
+        {/* Shared analytics — public, no auth */}
+        <Route path="/shared/analytics/:token" element={<SharedAnalyticsPage />} />
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

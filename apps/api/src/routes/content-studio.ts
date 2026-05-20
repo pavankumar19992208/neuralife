@@ -1302,6 +1302,11 @@ Output JSON: {
         { correlationId, topic: session.topicTitle },
         "Telugu translation via Gemini",
       );
+
+      // Send SSE keepalive comments every 8 s so the browser does not close
+      // the connection while Gemini processes the full 12-segment JSON (can take 45-90 s).
+      const keepalive = setInterval(() => { try { raw.write(': keepalive\n\n') } catch { /* connection already closed */ } }, 8000)
+
       try {
         emit("start", { totalSegments: 12, batches: 1, mode: "translation" });
         const prompt = buildTeluguTranslationPrompt(
@@ -1313,10 +1318,10 @@ Output JSON: {
             generateContentGemini(
               "You are a professional Telugu translator for school education. Output ONLY valid JSON. No markdown fences.",
               [{ role: "user", content: prompt }],
-              20000,
+              32768,
             ),
           correlationId,
-          { maxAttempts: 2, backoffMs: 2000 },
+          { maxAttempts: 2, backoffMs: 3000 },
         );
         let translatedSegments: Record<string, unknown>;
         try {
@@ -1325,10 +1330,12 @@ Output JSON: {
             unknown
           >;
         } catch {
-          emit("segment_error", {
-            id: "concept_summary",
-            message: "Translation returned invalid JSON — try again.",
-          });
+          for (const segId of SEGMENT_ORDER) {
+            emit("segment_error", {
+              id: segId,
+              message: "Translation returned invalid JSON — try again.",
+            });
+          }
           raw.write("event: done\ndata: {}\n\n");
           raw.end();
           return;
@@ -1348,13 +1355,17 @@ Output JSON: {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         logger.error({ correlationId, err: msg }, "Gemini translation failed");
-        emit("segment_error", {
-          id: "concept_summary",
-          message: `Translation failed: ${msg}`,
-        });
+        for (const segId of SEGMENT_ORDER) {
+          emit("segment_error", {
+            id: segId,
+            message: `Translation failed: ${msg}`,
+          });
+        }
         raw.write("event: done\ndata: {}\n\n");
         raw.end();
         return;
+      } finally {
+        clearInterval(keepalive)
       }
     }
 

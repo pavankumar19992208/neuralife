@@ -41,6 +41,12 @@ export class DatabaseError extends AppError {
   }
 }
 
+export class ConflictError extends AppError {
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(message, 'CONFLICT', 409, details)
+  }
+}
+
 export class ExternalServiceError extends AppError {
   constructor(
     public readonly serviceName: string,

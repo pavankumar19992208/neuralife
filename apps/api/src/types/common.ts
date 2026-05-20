@@ -1152,3 +1152,511 @@ export interface NEFTExportRow {
   net_salary: number
   remarks: string
 }
+
+// ─── Fleet / SmartPad Module Types ───────────────────────────────────────────
+
+export const LATEST_FIRMWARE = '1.4.0'
+
+export type DeviceStatus = 'ACTIVE' | 'LOCKED' | 'LOST' | 'MAINTENANCE' | 'DECOMMISSIONED'
+export type SyncStatus = 'RECENT' | 'WATCH' | 'OFFLINE' | 'CRITICAL'
+export type AlertSeverity = 'CRITICAL' | 'WARNING' | 'INFO'
+export type AlertType =
+  | 'OFFLINE_CRITICAL' | 'OFFLINE_WARNING' | 'LOST'
+  | 'LOW_BATTERY' | 'STORAGE_FULL' | 'FIRMWARE_OUTDATED'
+
+export interface FleetDevice {
+  device_id: string
+  serial_number: string
+  model: string
+  school_id: string
+  status: DeviceStatus
+  firmware_version: string
+  battery_level: number | null
+  storage_used_mb: number | null
+  location_lat: number | null
+  location_lng: number | null
+  last_sync_at: string | null
+  last_seen_at: string | null
+  total_sessions: number
+  total_usage_hours: number
+  assigned_neura_id: string | null
+  student_name: string | null
+  student_class: string | null
+  sync_status: SyncStatus
+  is_at_risk_student: boolean
+  active_alert_count: number
+}
+
+export interface FleetAlert {
+  id: string
+  device_id: string
+  school_id: string
+  neura_id: string | null
+  student_name: string | null
+  alert_type: AlertType
+  severity: AlertSeverity
+  message: string
+  triggered_at: string
+  acknowledged_at: string | null
+  acknowledged_by_name: string | null
+  resolved_at: string | null
+  is_active: boolean
+}
+
+export interface FleetKPIs {
+  total_devices: number
+  active_devices: number
+  offline_devices: number
+  critical_devices: number
+  lost_devices: number
+  firmware_outdated_count: number
+  active_alerts: number
+  sync_rate_pct: number
+  avg_battery_pct: number
+  avg_usage_hours: number
+}
+
+export interface FleetEfficiencyScore {
+  overall: number
+  sync_score: number
+  usage_score: number
+  device_health_score: number
+  firmware_score: number
+}
+
+export interface FleetOverview {
+  kpis: FleetKPIs
+  efficiency: FleetEfficiencyScore
+  devices: FleetDevice[]
+  alerts: FleetAlert[]
+}
+
+export interface HealthSnapshot {
+  id: string
+  device_id: string
+  snapshot_at: string
+  battery_level: number | null
+  storage_used_mb: number | null
+  firmware_version: string | null
+  sessions_count: number
+  usage_minutes: number
+  sync_type: string
+}
+
+export interface AssignmentHistoryItem {
+  id: string
+  neura_id: string
+  student_name: string
+  assigned_at: string
+  returned_at: string | null
+  condition_at_return: string | null
+  damage_description: string | null
+  repair_required: boolean
+  repair_cost_estimate: number | null
+  repair_status: string
+  notes: string | null
+}
+
+export interface DeviceDetail extends FleetDevice {
+  pending_firmware_version: string | null
+  loss_reported: boolean
+  loss_reported_at: string | null
+  breakage_deposit_paid: number
+  total_repair_cost: number
+  active_alerts: FleetAlert[]
+  health_snapshots: HealthSnapshot[]
+  assignment_history: AssignmentHistoryItem[]
+}
+
+export interface OTACampaign {
+  id: string
+  school_id: string
+  target_firmware: string
+  launched_at: string
+  target_device_ids: string[]
+  updated_count: number
+  failed_count: number
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED'
+  completed_at: string | null
+}
+
+export interface AssignDeviceInput {
+  neura_id: string
+}
+
+export interface ReturnDeviceInput {
+  condition: 'EXCELLENT' | 'GOOD' | 'MINOR_DAMAGE' | 'MAJOR_DAMAGE'
+  damage_description?: string
+  repair_required: boolean
+  repair_cost_estimate?: number
+  notes?: string
+}
+
+// ─── Analytics Deep Types ─────────────────────────────────────────────────────
+
+export type AnalyticsPeriod = 'month' | 'term' | 'year'
+
+export interface AnalyticsFilter {
+  period: AnalyticsPeriod
+  class_year?: number
+  section?: string
+  neura_id?: string
+}
+
+export interface SchoolNarrative {
+  id: string
+  school_id: string
+  month_year: string
+  neura_id: string | null
+  narrative_text: string
+  key_insights: string[]
+  generated_at: string
+  refresh_count: number
+}
+
+export interface TeacherPerformanceRow {
+  teacher_id: string
+  teacher_name: string
+  designation: string
+  classes_taught: string[]
+  subject: string
+  student_count: number
+  avg_mastery_score: number | null
+  vs_school_avg: number | null
+  mastery_velocity: number | null
+  engagement_rate: number | null
+  at_risk_count: number
+  intervention_rate: number | null
+  leave_days_month: number
+  context_flags: string[]
+  ai_insight: string | null
+}
+
+export interface CurriculumGapRow {
+  subject: string
+  chapter_number: number
+  chapter_title: string
+  mastery_pct: number
+  student_count: number
+}
+
+export interface SubjectMasteryRow {
+  subject: string
+  avg_score: number
+  student_count: number
+  trend_delta: number | null
+}
+
+export interface ExamProgressionRow {
+  subject: string
+  exam_type: string
+  school_avg: number
+  period_label: string
+}
+
+export interface AtRiskFunnelData {
+  stage_1_total: number
+  stage_2_declining: number
+  stage_3_at_risk: number
+  stage_4_unintervened: number
+  stage_5_critical: number
+}
+
+export interface RteComparisonData {
+  rte_students: number
+  non_rte_students: number
+  rte_mastery_avg: number
+  non_rte_mastery_avg: number
+  rte_attendance_avg: number
+  non_rte_attendance_avg: number
+}
+
+export interface AttendanceTrendDay {
+  date: string
+  rate: number
+  present_count: number
+  total_count: number
+}
+
+export interface ClassHeatmapEntry {
+  class_year: number
+  section: string
+  day_of_week: string
+  rate: number
+}
+
+export interface DayOfWeekStat {
+  day: string
+  avg_rate: number
+  below_school_avg: boolean
+}
+
+export interface ChronicAbsentee {
+  neura_id: string
+  name: string
+  class_year: number
+  section: string
+  absent_days: number
+  rate: number
+  last_attended: string | null
+  fee_status: 'PAID' | 'PARTIAL' | 'OVERDUE'
+}
+
+export interface AcademicAnalytics {
+  teacher_performance: TeacherPerformanceRow[]
+  subject_mastery: SubjectMasteryRow[]
+  curriculum_gaps: CurriculumGapRow[]
+  exam_progression: ExamProgressionRow[]
+  at_risk_funnel: AtRiskFunnelData
+  rte_comparison: RteComparisonData | null
+}
+
+export interface AttendanceDeepAnalytics {
+  trend_30d: AttendanceTrendDay[]
+  class_heatmap: ClassHeatmapEntry[]
+  day_of_week: DayOfWeekStat[]
+  chronic_absentees: ChronicAbsentee[]
+}
+
+export interface FinancialCollectionPoint {
+  month: string
+  collected: number
+  total_due: number
+  rate: number
+}
+
+export interface FinancialAnalytics {
+  collection_trend: FinancialCollectionPoint[]
+  outstanding_by_class: Array<{ class_year: number; outstanding: number; defaulters: number }>
+  salary_revenue_ratio: { salary_expense: number; fee_revenue: number; ratio: number }
+  financial_summary: { revenue: number; salary: number; surplus: number; annual_projection: number }
+  rte_fee_summary: { rte_students: number; rte_fee_waived: number; fee_paying_revenue: number }
+}
+
+export interface DigitalAnalytics {
+  utilization_trend: Array<{ date: string; utilization_pct: number }>
+  usage_mastery_scatter: Array<{ neura_id: string; avg_daily_hours: number; mastery_pct: number; is_at_risk: boolean }>
+  top_content: Array<{ chapter_id: string; chapter_title: string; subject: string; session_count: number }>
+  error_patterns: Array<{ pattern: string; occurrences: number; pct_of_total: number; vs_section_avg: number }>
+  underutilized: Array<{ neura_id: string; name: string; class_year: number; section: string; sessions_this_week: number; last_session: string | null; is_at_risk: boolean }>
+}
+
+export interface YoYComparison {
+  metric: string
+  this_year: number
+  last_year: number
+  delta: number
+}
+
+export interface BenchmarkData {
+  metric: string
+  school_value: number
+  p25: number
+  p50: number
+  p75: number
+  percentile_label: 'TOP_25' | 'TOP_50' | 'TOP_75' | 'BOTTOM_25'
+  school_count: number
+}
+
+export interface StudentMasterySubject {
+  subject: string
+  mastery_pct: number
+  trend_delta: number | null
+  percentile: number | null
+  vs_class_avg: number | null
+  vs_school_avg: number | null
+  classification: string | null
+}
+
+export interface StudentMasteryPoint {
+  month: string
+  avg_percentile: number
+}
+
+export interface StudentIntelligence {
+  neura_id: string
+  full_name: string
+  class_year: number
+  section: string
+  medium: string
+  band: string | null
+  status: string
+  smartpad_id: string | null
+  is_rte_student: boolean
+  mastery: StudentMasterySubject[]
+  mastery_trajectory: StudentMasteryPoint[]
+  attendance_90d: Array<{ date: string; status: string | null }>
+  attendance_rate_90d: number
+  smartpad_sessions_90d: number
+  avg_session_minutes: number
+  error_patterns: Array<{ pattern: string; occurrences: number; subject: string }>
+  exam_history: Array<{ exam_name: string; exam_type: string; subject: string; marks: number | null; max_marks: number; percentage: number | null }>
+  section_avg_mastery: number | null
+  class_avg_mastery: number | null
+  school_avg_mastery: number | null
+  ai_insight: string | null
+}
+
+export interface SectionComparison {
+  section: string
+  mastery_avg: number
+  attendance_avg: number
+  at_risk_count: number
+  smartpad_usage_avg: number
+  fee_collection_pct: number
+}
+
+export interface BookmarkItem {
+  id: string
+  url: string
+  title: string
+  icon: string | null
+  sort_order: number
+  created_at: string
+}
+
+export interface ShareToken {
+  token: string
+  url_path: string
+  expires_at: string
+}
+
+export interface BoardExamResult {
+  neura_id: string
+  subject: string
+  marks: number
+  max_marks: number
+  grade: string | null
+}
+
+export interface PredictionAccuracy {
+  subject: string
+  predicted_avg: number
+  actual_avg: number
+  accuracy_pct: number
+}
+
+// ─── NeuraSphere Types ─────────────────────────────────────────────────────
+
+export interface NeuraSpherePost {
+  id: string;
+  neura_id: string | null;
+  school_id: string;
+  post_type: 'ACHIEVEMENT' | 'MANUAL' | 'DOUBT' | 'CONTEXTUAL';
+  content_text: string;
+  image_url: string | null;
+  tags: string[];
+  badge_id: string | null;
+  source: string;
+  moderation_status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'HUMAN_REVIEW' | 'REMOVED_BY_AI' | 'REMOVED_BY_PRINCIPAL';
+  moderation_confidence: number | null;
+  moderation_reason: string | null;
+  published_at: string | null;
+  parent_visible: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  // New columns from migration
+  ai_score: 'SAFE' | 'REVIEW' | 'REMOVE' | null;
+  ai_confidence: number | null;
+  ai_category: string | null;
+  ai_reason: string | null;
+  ai_checked_at: string | null;
+  author_type: 'STUDENT' | 'PRINCIPAL' | 'TEACHER' | 'SYSTEM';
+  scheduled_at: string | null;
+  is_pinned: boolean;
+  is_cross_school: boolean;
+  status: 'ACTIVE' | 'SCHEDULED' | 'REMOVED_BY_AI' | 'REMOVED_BY_PRINCIPAL' | 'DRAFT';
+  post_category: 'GENERAL' | 'STUDY_TIP' | 'ACHIEVEMENT' | 'ANNOUNCEMENT' | 'QUESTION' | 'PROJECT';
+  // Enriched fields
+  author_name?: string;
+  author_class?: string;
+  author_section?: string;
+  report_count?: number;
+  reaction_count?: number;
+  comment_count?: number;
+}
+
+export interface PostReport {
+  id: string;
+  post_id: string;
+  reported_by_neura_id: string;
+  reporter_school_id: string;
+  report_reason: 'INAPPROPRIATE' | 'SPAM' | 'BULLYING' | 'PERSONAL_INFO' | 'OTHER';
+  report_details: string | null;
+  status: 'PENDING' | 'REVIEWED' | 'DISMISSED';
+  reviewed_by_teacher_id: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+}
+
+export interface ModerationAction {
+  id: string;
+  post_id: string;
+  action: 'REMOVE' | 'RESTORE' | 'PIN' | 'UNPIN' | 'WARN' | 'BLOCK' | 'APPROVE' | 'REJECT';
+  taken_by: string; // 'SYSTEM' for AI, or teacher_id/principal_id
+  taken_by_type: 'SYSTEM' | 'TEACHER' | 'PRINCIPAL';
+  reason: string | null;
+  action_metadata: Record<string, any>;
+  created_at: string;
+}
+
+export interface NeuraSphereSettings {
+  id: string;
+  school_id: string;
+  allow_cross_school: boolean;
+  require_approval: boolean;
+  max_posts_per_day: number;
+  keyword_blocklist: string[];
+  blocked_posters: string[];
+  posting_hours_start: string;
+  posting_hours_end: string;
+  enable_achievements: boolean;
+  enable_manual_posts: boolean;
+  enable_photo_posts: boolean;
+  settings_audit_log: Record<string, any>[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ModerationSummary {
+  flagged_by_ai: NeuraSpherePost[];
+  reported_by_community: NeuraSpherePost[];
+  recently_auto_removed: NeuraSpherePost[];
+}
+
+export interface SphereAnalytics {
+  active_posters_week: number;
+  total_posts_month: number;
+  ai_review_rate: number;
+  cross_school_views: number;
+  top_posts: Array<{
+    post: NeuraSpherePost;
+    engagement_score: number;
+  }>;
+  posting_trend: Array<{
+    date: string;
+    poster_count: number;
+  }>;
+  category_breakdown: Array<{
+    category: string;
+    count: number;
+  }>;
+  moderation_summary: {
+    total: number;
+    auto_removed: number;
+    principal_removed: number;
+    restored: number;
+  };
+}
+
+export interface CreatePostInput {
+  content: string;
+  post_category: 'GENERAL' | 'STUDY_TIP' | 'ACHIEVEMENT' | 'ANNOUNCEMENT' | 'QUESTION' | 'PROJECT';
+  is_cross_school: boolean;
+  scheduled_at?: string;
+  image_urls?: string[];
+}
+
+export interface PostActionInput {
+  action: 'REMOVE' | 'RESTORE' | 'PIN' | 'UNPIN' | 'WARN' | 'BLOCK';
+}

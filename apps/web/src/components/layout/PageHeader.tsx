@@ -1,14 +1,24 @@
 import { ChevronLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import BookmarkButton from '@/components/ui/BookmarkButton'
 
 interface PageHeaderProps {
   title: string
   description?: string
   action?: React.ReactNode
   backHref?: string
+  bookmarkUrl?: string
+  bookmarkTitle?: string
 }
 
-export default function PageHeader({ title, description, action, backHref }: PageHeaderProps) {
+export default function PageHeader({
+  title,
+  description,
+  action,
+  backHref,
+  bookmarkUrl,
+  bookmarkTitle,
+}: PageHeaderProps) {
   return (
     <div className="mb-6">
       {backHref && (
@@ -27,7 +37,12 @@ export default function PageHeader({ title, description, action, backHref }: Pag
             <p className="mt-1 text-sm text-slate-500">{description}</p>
           )}
         </div>
-        {action && <div className="flex-shrink-0">{action}</div>}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {bookmarkUrl && (
+            <BookmarkButton url={bookmarkUrl} title={bookmarkTitle ?? title} />
+          )}
+          {action && action}
+        </div>
       </div>
     </div>
   )

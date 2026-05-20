@@ -18,6 +18,10 @@ import contentStudioRoutes from './routes/content-studio.js'
 import examRoutes from './routes/exams.js'
 import timetableRoutes from './routes/timetable.js'
 import salaryRoutes from './routes/salary.js'
+import fleetRoutes from './routes/fleet.js'
+import analyticsDeepRoutes from './routes/analytics-deep.js'
+import bookmarkRoutes from './routes/bookmarks.js'
+import sphereRoutes from './routes/sphere.js'
 import { AppError } from './utils/errors.js'
 
 export async function startServer() {
@@ -146,6 +150,18 @@ export async function startServer() {
 
   // Salary routes
   await fastify.register(salaryRoutes)
+
+  // Fleet routes
+  await fastify.register(fleetRoutes)
+
+  // Analytics Deep routes
+  await fastify.register(analyticsDeepRoutes)
+
+  // Bookmark routes
+  await fastify.register(bookmarkRoutes)
+
+  // Sphere routes
+  await fastify.register(sphereRoutes)
 
   // Graceful shutdown
   const shutdown = async (signal: string) => {

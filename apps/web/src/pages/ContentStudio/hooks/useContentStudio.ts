@@ -475,6 +475,12 @@ export function useContentStudio() {
       // Claude generates English silently → Gemini translates to Telugu
       // Show loading state immediately during the silent English phase
       setIsGeneratingTE(true)
+      setAllSegments((prev) => ({
+        ...prev,
+        TELUGU: Object.fromEntries(
+          SEGMENT_ORDER.map((id) => [id, { ...prev.TELUGU[id], status: 'generating' as const }]),
+        ) as SegmentMap,
+      }))
       let enSegments: Record<string, unknown> = {}
       try {
         enSegments = await generateEnglishForTranslation(fullSession)

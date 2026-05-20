@@ -31,7 +31,7 @@ export class NeuraCoinRepository {
         entries.map((e) => ({
           neura_id: e.neura_id,
           school_id: e.school_id,
-          transaction_type: e.transaction_type,
+          transaction_type: e.transaction_type as Database['public']['Enums']['neuracoin_transaction_type'],
           amount: e.amount,
           reference_id: e.reference_id,
           reference_type: e.reference_type,

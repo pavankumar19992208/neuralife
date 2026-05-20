@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@neuralife/shared'
+import type { Database, Json } from '@neuralife/shared'
 import type { FastifyBaseLogger } from 'fastify'
 import { DatabaseError, NotFoundError, ValidationError } from '../utils/errors.js'
 import type {
@@ -569,6 +569,7 @@ export class ExamRepository {
     const rows = results.map((r) => ({
       exam_id: examId,
       ...r,
+      subject_results: r.subject_results as unknown as Json,
       computed_at: new Date().toISOString(),
     }))
 

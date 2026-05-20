@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       academic_years: {
@@ -70,6 +45,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "academic_years_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_share_tokens: {
+        Row: {
+          access_count: number
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          school_id: string
+          token: string
+          url_path: string
+        }
+        Insert: {
+          access_count?: number
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          school_id: string
+          token: string
+          url_path: string
+        }
+        Update: {
+          access_count?: number
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          school_id?: string
+          token?: string
+          url_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_share_tokens_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
@@ -417,6 +433,70 @@ export type Database = {
           },
           {
             foreignKeyName: "behaviour_incidents_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_exam_results: {
+        Row: {
+          academic_year_id: string | null
+          exam_year: number
+          grade: string | null
+          id: string
+          marks: number
+          max_marks: number
+          neura_id: string
+          school_id: string
+          subject: string
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          academic_year_id?: string | null
+          exam_year: number
+          grade?: string | null
+          id?: string
+          marks: number
+          max_marks?: number
+          neura_id: string
+          school_id: string
+          subject: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          academic_year_id?: string | null
+          exam_year?: number
+          grade?: string | null
+          id?: string
+          marks?: number
+          max_marks?: number
+          neura_id?: string
+          school_id?: string
+          subject?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_exam_results_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_exam_results_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+          {
+            foreignKeyName: "board_exam_results_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
@@ -1347,36 +1427,36 @@ export type Database = {
       }
       exam_marks: {
         Row: {
-          id: string
+          entered_at: string | null
+          entered_by: string | null
           exam_id: string
           exam_subject_id: string
-          neura_id: string
-          marks_obtained: number | null
+          id: string
           is_absent: boolean
-          entered_by: string | null
-          entered_at: string | null
+          marks_obtained: number | null
+          neura_id: string
           updated_at: string
         }
         Insert: {
-          id?: string
+          entered_at?: string | null
+          entered_by?: string | null
           exam_id: string
           exam_subject_id: string
-          neura_id: string
-          marks_obtained?: number | null
+          id?: string
           is_absent?: boolean
-          entered_by?: string | null
-          entered_at?: string | null
+          marks_obtained?: number | null
+          neura_id: string
           updated_at?: string
         }
         Update: {
-          id?: string
+          entered_at?: string | null
+          entered_by?: string | null
           exam_id?: string
           exam_subject_id?: string
-          neura_id?: string
-          marks_obtained?: number | null
+          id?: string
           is_absent?: boolean
-          entered_by?: string | null
-          entered_at?: string | null
+          marks_obtained?: number | null
+          neura_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -1405,58 +1485,58 @@ export type Database = {
       }
       exam_results: {
         Row: {
-          id: string
+          class_rank: number | null
+          class_year: number | null
+          computed_at: string
           exam_id: string
+          grade: string
+          id: string
+          is_pass: boolean
           neura_id: string
+          neuracoin_earned: number
+          overall_rank: number | null
+          percentage: number
+          section: string | null
+          subject_results: Json
+          teacher_remarks: string | null
           total_marks_obtained: number
           total_max_marks: number
-          percentage: number
-          grade: string
-          class_rank: number | null
-          overall_rank: number | null
-          is_pass: boolean
-          subject_results: unknown
-          neuracoin_earned: number
-          teacher_remarks: string | null
-          computed_at: string
-          class_year: number | null
-          section: string | null
         }
         Insert: {
-          id?: string
+          class_rank?: number | null
+          class_year?: number | null
+          computed_at?: string
           exam_id: string
+          grade: string
+          id?: string
+          is_pass: boolean
           neura_id: string
+          neuracoin_earned?: number
+          overall_rank?: number | null
+          percentage: number
+          section?: string | null
+          subject_results?: Json
+          teacher_remarks?: string | null
           total_marks_obtained: number
           total_max_marks: number
-          percentage: number
-          grade: string
-          class_rank?: number | null
-          overall_rank?: number | null
-          is_pass: boolean
-          subject_results?: unknown
-          neuracoin_earned?: number
-          teacher_remarks?: string | null
-          computed_at?: string
-          class_year?: number | null
-          section?: string | null
         }
         Update: {
-          id?: string
+          class_rank?: number | null
+          class_year?: number | null
+          computed_at?: string
           exam_id?: string
+          grade?: string
+          id?: string
+          is_pass?: boolean
           neura_id?: string
+          neuracoin_earned?: number
+          overall_rank?: number | null
+          percentage?: number
+          section?: string | null
+          subject_results?: Json
+          teacher_remarks?: string | null
           total_marks_obtained?: number
           total_max_marks?: number
-          percentage?: number
-          grade?: string
-          class_rank?: number | null
-          overall_rank?: number | null
-          is_pass?: boolean
-          subject_results?: unknown
-          neuracoin_earned?: number
-          teacher_remarks?: string | null
-          computed_at?: string
-          class_year?: number | null
-          section?: string | null
         }
         Relationships: [
           {
@@ -1475,42 +1555,75 @@ export type Database = {
           },
         ]
       }
-      exam_subjects: {
+      exam_subject_chapters: {
         Row: {
+          chapter_id: string
+          exam_subject_id: string
           id: string
-          exam_id: string
-          subject: string
-          class_year: number
-          section: string | null
-          max_marks: number
-          pass_marks: number
-          teacher_id: string | null
-          exam_date: string | null
-          created_at: string
         }
         Insert: {
+          chapter_id: string
+          exam_subject_id: string
           id?: string
-          exam_id: string
-          subject: string
-          class_year: number
-          section?: string | null
-          max_marks?: number
-          pass_marks?: number
-          teacher_id?: string | null
-          exam_date?: string | null
-          created_at?: string
         }
         Update: {
+          chapter_id?: string
+          exam_subject_id?: string
           id?: string
-          exam_id?: string
-          subject?: string
-          class_year?: number
-          section?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_subject_chapters_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "cs_chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_subject_chapters_exam_subject_id_fkey"
+            columns: ["exam_subject_id"]
+            isOneToOne: false
+            referencedRelation: "exam_subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_subjects: {
+        Row: {
+          class_year: number
+          created_at: string
+          exam_date: string | null
+          exam_id: string
+          id: string
+          max_marks: number
+          pass_marks: number
+          section: string | null
+          subject: string
+          teacher_id: string | null
+        }
+        Insert: {
+          class_year: number
+          created_at?: string
+          exam_date?: string | null
+          exam_id: string
+          id?: string
           max_marks?: number
           pass_marks?: number
+          section?: string | null
+          subject: string
           teacher_id?: string | null
-          exam_date?: string | null
+        }
+        Update: {
+          class_year?: number
           created_at?: string
+          exam_date?: string | null
+          exam_id?: string
+          id?: string
+          max_marks?: number
+          pass_marks?: number
+          section?: string | null
+          subject?: string
+          teacher_id?: string | null
         }
         Relationships: [
           {
@@ -1531,72 +1644,72 @@ export type Database = {
       }
       exams: {
         Row: {
-          id: string
-          school_id: string
           academic_year_id: string
-          name: string
-          exam_type: Database["public"]["Enums"]["exam_type"]
-          description: string | null
-          start_date: string
-          end_date: string
-          status: Database["public"]["Enums"]["exam_status"]
-          schedule_type: string
+          ai_insight: string | null
+          chapter_ids: Json
+          created_at: string
           created_by: string
           deleted_at: string | null
-          ai_insight: string | null
-          chapter_ids: unknown
-          created_at: string
+          description: string | null
+          end_date: string
+          exam_type: Database["public"]["Enums"]["exam_type"]
+          id: string
+          name: string
+          schedule_type: string
+          school_id: string
+          start_date: string
+          status: Database["public"]["Enums"]["exam_status"]
           updated_at: string
         }
         Insert: {
-          id?: string
-          school_id: string
           academic_year_id: string
-          name: string
-          exam_type: Database["public"]["Enums"]["exam_type"]
-          description?: string | null
-          start_date: string
-          end_date: string
-          status?: Database["public"]["Enums"]["exam_status"]
-          schedule_type?: string
+          ai_insight?: string | null
+          chapter_ids?: Json
+          created_at?: string
           created_by: string
           deleted_at?: string | null
-          ai_insight?: string | null
-          chapter_ids?: unknown
-          created_at?: string
+          description?: string | null
+          end_date: string
+          exam_type: Database["public"]["Enums"]["exam_type"]
+          id?: string
+          name: string
+          schedule_type?: string
+          school_id: string
+          start_date: string
+          status?: Database["public"]["Enums"]["exam_status"]
           updated_at?: string
         }
         Update: {
-          id?: string
-          school_id?: string
           academic_year_id?: string
-          name?: string
-          exam_type?: Database["public"]["Enums"]["exam_type"]
-          description?: string | null
-          start_date?: string
-          end_date?: string
-          status?: Database["public"]["Enums"]["exam_status"]
-          schedule_type?: string
+          ai_insight?: string | null
+          chapter_ids?: Json
+          created_at?: string
           created_by?: string
           deleted_at?: string | null
-          ai_insight?: string | null
-          chapter_ids?: unknown
-          created_at?: string
+          description?: string | null
+          end_date?: string
+          exam_type?: Database["public"]["Enums"]["exam_type"]
+          id?: string
+          name?: string
+          schedule_type?: string
+          school_id?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["exam_status"]
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "exams_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "exams_academic_year_id_fkey"
             columns: ["academic_year_id"]
             isOneToOne: false
             referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exams_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
             referencedColumns: ["id"]
           },
         ]
@@ -1768,13 +1881,6 @@ export type Database = {
             columns: ["custom_fee_head_id"]
             isOneToOne: false
             referencedRelation: "custom_fee_heads"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fee_ledger_exam_schedule_id_fkey"
-            columns: ["exam_schedule_id"]
-            isOneToOne: false
-            referencedRelation: "exam_schedules"
             referencedColumns: ["id"]
           },
           {
@@ -2005,36 +2111,36 @@ export type Database = {
       }
       grade_config: {
         Row: {
-          id: string
-          school_id: string | null
-          grade_label: string
-          min_percentage: number
-          max_percentage: number
-          grade_points: number
-          neuracoin_reward: number
           display_color: string
+          grade_label: string
+          grade_points: number
+          id: string
+          max_percentage: number
+          min_percentage: number
+          neuracoin_reward: number
+          school_id: string | null
           sort_order: number
         }
         Insert: {
-          id?: string
-          school_id?: string | null
-          grade_label: string
-          min_percentage: number
-          max_percentage: number
-          grade_points?: number
-          neuracoin_reward?: number
           display_color?: string
+          grade_label: string
+          grade_points?: number
+          id?: string
+          max_percentage: number
+          min_percentage: number
+          neuracoin_reward?: number
+          school_id?: string | null
           sort_order?: number
         }
         Update: {
-          id?: string
-          school_id?: string | null
-          grade_label?: string
-          min_percentage?: number
-          max_percentage?: number
-          grade_points?: number
-          neuracoin_reward?: number
           display_color?: string
+          grade_label?: string
+          grade_points?: number
+          id?: string
+          max_percentage?: number
+          min_percentage?: number
+          neuracoin_reward?: number
+          school_id?: string | null
           sort_order?: number
         }
         Relationships: [
@@ -2459,6 +2565,67 @@ export type Database = {
           },
         ]
       }
+      marks_entry_audit: {
+        Row: {
+          action: string
+          created_at: string
+          entered_by: string
+          exam_id: string
+          exam_subject_id: string
+          id: string
+          neura_id: string
+          new_marks: number | null
+          old_marks: number | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entered_by: string
+          exam_id: string
+          exam_subject_id: string
+          id?: string
+          neura_id: string
+          new_marks?: number | null
+          old_marks?: number | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entered_by?: string
+          exam_id?: string
+          exam_subject_id?: string
+          id?: string
+          neura_id?: string
+          new_marks?: number | null
+          old_marks?: number | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marks_entry_audit_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marks_entry_audit_exam_subject_id_fkey"
+            columns: ["exam_subject_id"]
+            isOneToOne: false
+            referencedRelation: "exam_subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marks_entry_audit_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+        ]
+      }
       mastery_snapshots: {
         Row: {
           authenticity_weight: number | null
@@ -2511,67 +2678,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "mastery_snapshots_neura_id_fkey"
-            columns: ["neura_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["neura_id"]
-          },
-        ]
-      }
-      marks_entry_audit: {
-        Row: {
-          id: string
-          exam_id: string
-          exam_subject_id: string
-          neura_id: string
-          action: string
-          old_marks: number | null
-          new_marks: number | null
-          entered_by: string
-          reason: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          exam_id: string
-          exam_subject_id: string
-          neura_id: string
-          action: string
-          old_marks?: number | null
-          new_marks?: number | null
-          entered_by: string
-          reason?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          exam_id?: string
-          exam_subject_id?: string
-          neura_id?: string
-          action?: string
-          old_marks?: number | null
-          new_marks?: number | null
-          entered_by?: string
-          reason?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "marks_entry_audit_exam_id_fkey"
-            columns: ["exam_id"]
-            isOneToOne: false
-            referencedRelation: "exams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marks_entry_audit_exam_subject_id_fkey"
-            columns: ["exam_subject_id"]
-            isOneToOne: false
-            referencedRelation: "exam_subjects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marks_entry_audit_neura_id_fkey"
             columns: ["neura_id"]
             isOneToOne: false
             referencedRelation: "students"
@@ -2729,39 +2835,80 @@ export type Database = {
         }
         Relationships: []
       }
-      neuracoin_ledger: {
+      moderation_actions: {
         Row: {
-          id: string
-          neura_id: string
-          school_id: string
-          transaction_type: string
-          amount: number
-          reference_id: string | null
-          reference_type: string | null
-          description: string
+          action: string
+          action_metadata: Json | null
           created_at: string | null
+          id: string
+          post_id: string
+          reason: string | null
+          taken_by: string
+          taken_by_type: string
         }
         Insert: {
-          id?: string
-          neura_id: string
-          school_id: string
-          transaction_type: string
-          amount: number
-          reference_id?: string | null
-          reference_type?: string | null
-          description: string
+          action: string
+          action_metadata?: Json | null
           created_at?: string | null
+          id?: string
+          post_id: string
+          reason?: string | null
+          taken_by: string
+          taken_by_type: string
         }
         Update: {
+          action?: string
+          action_metadata?: Json | null
+          created_at?: string | null
           id?: string
-          neura_id?: string
-          school_id?: string
-          transaction_type?: string
-          amount?: number
+          post_id?: string
+          reason?: string | null
+          taken_by?: string
+          taken_by_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "neurasphere_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      neuracoin_ledger: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          neura_id: string
+          reference_id: string | null
+          reference_type: string | null
+          school_id: string
+          transaction_type: Database["public"]["Enums"]["neuracoin_transaction_type"]
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          neura_id: string
           reference_id?: string | null
           reference_type?: string | null
+          school_id: string
+          transaction_type: Database["public"]["Enums"]["neuracoin_transaction_type"]
+        }
+        Update: {
+          amount?: number
+          created_at?: string
           description?: string
-          created_at?: string | null
+          id?: string
+          neura_id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          school_id?: string
+          transaction_type?: Database["public"]["Enums"]["neuracoin_transaction_type"]
         }
         Relationships: [
           {
@@ -2780,65 +2927,140 @@ export type Database = {
           },
         ]
       }
+      neuralife_benchmark_stats: {
+        Row: {
+          board: string
+          computed_at: string
+          id: string
+          metric: string
+          p25: number
+          p50: number
+          p75: number
+          period: string
+          school_count: number
+          size_bucket: string
+          state: string
+        }
+        Insert: {
+          board: string
+          computed_at?: string
+          id?: string
+          metric: string
+          p25: number
+          p50: number
+          p75: number
+          period: string
+          school_count?: number
+          size_bucket: string
+          state: string
+        }
+        Update: {
+          board?: string
+          computed_at?: string
+          id?: string
+          metric?: string
+          p25?: number
+          p50?: number
+          p75?: number
+          period?: string
+          school_count?: number
+          size_bucket?: string
+          state?: string
+        }
+        Relationships: []
+      }
       neurasphere_posts: {
         Row: {
+          ai_category: string | null
+          ai_checked_at: string | null
+          ai_confidence: number | null
+          ai_reason: string | null
+          ai_score: Database["public"]["Enums"]["ai_score"] | null
+          author_type: Database["public"]["Enums"]["author_type"] | null
           badge_id: string | null
           content_text: string
           created_at: string | null
           deleted_at: string | null
           id: string
           image_url: string | null
+          is_cross_school: boolean | null
+          is_pinned: boolean | null
           moderation_confidence: number | null
           moderation_reason: string | null
           moderation_status:
             | Database["public"]["Enums"]["moderation_status"]
             | null
-          neura_id: string
+          neura_id: string | null
           parent_visible: boolean | null
+          post_category: Database["public"]["Enums"]["post_category"] | null
           post_type: Database["public"]["Enums"]["post_type"]
           published_at: string | null
+          scheduled_at: string | null
           school_id: string
           source: string | null
+          status: string | null
           tags: string[] | null
         }
         Insert: {
+          ai_category?: string | null
+          ai_checked_at?: string | null
+          ai_confidence?: number | null
+          ai_reason?: string | null
+          ai_score?: Database["public"]["Enums"]["ai_score"] | null
+          author_type?: Database["public"]["Enums"]["author_type"] | null
           badge_id?: string | null
           content_text: string
           created_at?: string | null
           deleted_at?: string | null
           id?: string
           image_url?: string | null
+          is_cross_school?: boolean | null
+          is_pinned?: boolean | null
           moderation_confidence?: number | null
           moderation_reason?: string | null
           moderation_status?:
             | Database["public"]["Enums"]["moderation_status"]
             | null
-          neura_id: string
+          neura_id?: string | null
           parent_visible?: boolean | null
+          post_category?: Database["public"]["Enums"]["post_category"] | null
           post_type: Database["public"]["Enums"]["post_type"]
           published_at?: string | null
+          scheduled_at?: string | null
           school_id: string
           source?: string | null
+          status?: string | null
           tags?: string[] | null
         }
         Update: {
+          ai_category?: string | null
+          ai_checked_at?: string | null
+          ai_confidence?: number | null
+          ai_reason?: string | null
+          ai_score?: Database["public"]["Enums"]["ai_score"] | null
+          author_type?: Database["public"]["Enums"]["author_type"] | null
           badge_id?: string | null
           content_text?: string
           created_at?: string | null
           deleted_at?: string | null
           id?: string
           image_url?: string | null
+          is_cross_school?: boolean | null
+          is_pinned?: boolean | null
           moderation_confidence?: number | null
           moderation_reason?: string | null
           moderation_status?:
             | Database["public"]["Enums"]["moderation_status"]
             | null
-          neura_id?: string
+          neura_id?: string | null
           parent_visible?: boolean | null
+          post_category?: Database["public"]["Enums"]["post_category"] | null
           post_type?: Database["public"]["Enums"]["post_type"]
           published_at?: string | null
+          scheduled_at?: string | null
           school_id?: string
           source?: string | null
+          status?: string | null
           tags?: string[] | null
         }
         Relationships: [
@@ -2853,6 +3075,68 @@ export type Database = {
             foreignKeyName: "neurasphere_posts_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      neurasphere_settings: {
+        Row: {
+          allow_cross_school: boolean | null
+          blocked_posters: string[] | null
+          created_at: string | null
+          enable_achievements: boolean | null
+          enable_manual_posts: boolean | null
+          enable_photo_posts: boolean | null
+          id: string
+          keyword_blocklist: string[] | null
+          max_posts_per_day: number | null
+          posting_hours_end: string | null
+          posting_hours_start: string | null
+          require_approval: boolean | null
+          school_id: string
+          settings_audit_log: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          allow_cross_school?: boolean | null
+          blocked_posters?: string[] | null
+          created_at?: string | null
+          enable_achievements?: boolean | null
+          enable_manual_posts?: boolean | null
+          enable_photo_posts?: boolean | null
+          id?: string
+          keyword_blocklist?: string[] | null
+          max_posts_per_day?: number | null
+          posting_hours_end?: string | null
+          posting_hours_start?: string | null
+          require_approval?: boolean | null
+          school_id: string
+          settings_audit_log?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          allow_cross_school?: boolean | null
+          blocked_posters?: string[] | null
+          created_at?: string | null
+          enable_achievements?: boolean | null
+          enable_manual_posts?: boolean | null
+          enable_photo_posts?: boolean | null
+          id?: string
+          keyword_blocklist?: string[] | null
+          max_posts_per_day?: number | null
+          posting_hours_end?: string | null
+          posting_hours_start?: string | null
+          require_approval?: boolean | null
+          school_id?: string
+          settings_audit_log?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "neurasphere_settings_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: true
             referencedRelation: "schools"
             referencedColumns: ["id"]
           },
@@ -3306,6 +3590,57 @@ export type Database = {
           },
         ]
       }
+      payroll_adjustments: {
+        Row: {
+          added_by: string | null
+          adjustment_type: string
+          amount: number
+          created_at: string
+          id: string
+          is_deduction: boolean
+          label: string
+          payslip_id: string
+          school_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          adjustment_type: string
+          amount: number
+          created_at?: string
+          id?: string
+          is_deduction?: boolean
+          label: string
+          payslip_id: string
+          school_id: string
+        }
+        Update: {
+          added_by?: string | null
+          adjustment_type?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          is_deduction?: boolean
+          label?: string
+          payslip_id?: string
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_adjustments_payslip_id_fkey"
+            columns: ["payslip_id"]
+            isOneToOne: false
+            referencedRelation: "payslips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payroll_adjustments_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payroll_entries: {
         Row: {
           basic_earned: number | null
@@ -3387,13 +3722,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "payroll_entries_payroll_run_id_fkey"
-            columns: ["payroll_run_id"]
-            isOneToOne: false
-            referencedRelation: "payroll_runs"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "payroll_entries_salary_structure_id_fkey"
             columns: ["salary_structure_id"]
             isOneToOne: false
@@ -3418,62 +3746,71 @@ export type Database = {
       }
       payroll_runs: {
         Row: {
+          academic_year_id: string
           approved_at: string | null
           approved_by: string | null
-          created_at: string | null
-          disbursed_at: string | null
+          created_at: string
+          generated_at: string | null
+          generated_by: string | null
           id: string
-          month_end: string
-          month_label: string
-          month_start: string
+          month: number
+          notes: string | null
+          paid_at: string | null
           school_id: string
-          status: string | null
-          total_deductions: number | null
-          total_gross: number | null
-          total_net: number | null
-          validated_at: string | null
-          validated_by: string | null
+          status: string
+          teacher_count: number
+          total_deductions: number
+          total_gross: number
+          total_net: number
+          updated_at: string
+          year: number
         }
         Insert: {
+          academic_year_id: string
           approved_at?: string | null
           approved_by?: string | null
-          created_at?: string | null
-          disbursed_at?: string | null
+          created_at?: string
+          generated_at?: string | null
+          generated_by?: string | null
           id?: string
-          month_end: string
-          month_label: string
-          month_start: string
+          month: number
+          notes?: string | null
+          paid_at?: string | null
           school_id: string
-          status?: string | null
-          total_deductions?: number | null
-          total_gross?: number | null
-          total_net?: number | null
-          validated_at?: string | null
-          validated_by?: string | null
+          status?: string
+          teacher_count?: number
+          total_deductions?: number
+          total_gross?: number
+          total_net?: number
+          updated_at?: string
+          year: number
         }
         Update: {
+          academic_year_id?: string
           approved_at?: string | null
           approved_by?: string | null
-          created_at?: string | null
-          disbursed_at?: string | null
+          created_at?: string
+          generated_at?: string | null
+          generated_by?: string | null
           id?: string
-          month_end?: string
-          month_label?: string
-          month_start?: string
+          month?: number
+          notes?: string | null
+          paid_at?: string | null
           school_id?: string
-          status?: string | null
-          total_deductions?: number | null
-          total_gross?: number | null
-          total_net?: number | null
-          validated_at?: string | null
-          validated_by?: string | null
+          status?: string
+          teacher_count?: number
+          total_deductions?: number
+          total_gross?: number
+          total_net?: number
+          updated_at?: string
+          year?: number
         }
         Relationships: [
           {
-            foreignKeyName: "payroll_runs_approved_by_fkey"
-            columns: ["approved_by"]
+            foreignKeyName: "payroll_runs_academic_year_id_fkey"
+            columns: ["academic_year_id"]
             isOneToOne: false
-            referencedRelation: "teachers"
+            referencedRelation: "academic_years"
             referencedColumns: ["id"]
           },
           {
@@ -3483,9 +3820,111 @@ export type Database = {
             referencedRelation: "schools"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      payslips: {
+        Row: {
+          basic: number
+          created_at: string
+          da: number
+          esi_employee: number
+          gross_salary: number
+          hra: number
+          id: string
+          lop_days: number
+          lop_deduction: number
+          month: number
+          net_salary: number
+          payment_date: string | null
+          payment_reference: string | null
+          payroll_run_id: string
+          pf_employee: number
+          present_days: number
+          professional_tax: number
+          school_id: string
+          special_allowance: number
+          status: string
+          teacher_id: string
+          total_deductions: number
+          transport_allowance: number
+          updated_at: string
+          working_days: number
+          year: number
+        }
+        Insert: {
+          basic?: number
+          created_at?: string
+          da?: number
+          esi_employee?: number
+          gross_salary?: number
+          hra?: number
+          id?: string
+          lop_days?: number
+          lop_deduction?: number
+          month: number
+          net_salary?: number
+          payment_date?: string | null
+          payment_reference?: string | null
+          payroll_run_id: string
+          pf_employee?: number
+          present_days?: number
+          professional_tax?: number
+          school_id: string
+          special_allowance?: number
+          status?: string
+          teacher_id: string
+          total_deductions?: number
+          transport_allowance?: number
+          updated_at?: string
+          working_days?: number
+          year: number
+        }
+        Update: {
+          basic?: number
+          created_at?: string
+          da?: number
+          esi_employee?: number
+          gross_salary?: number
+          hra?: number
+          id?: string
+          lop_days?: number
+          lop_deduction?: number
+          month?: number
+          net_salary?: number
+          payment_date?: string | null
+          payment_reference?: string | null
+          payroll_run_id?: string
+          pf_employee?: number
+          present_days?: number
+          professional_tax?: number
+          school_id?: string
+          special_allowance?: number
+          status?: string
+          teacher_id?: string
+          total_deductions?: number
+          transport_allowance?: number
+          updated_at?: string
+          working_days?: number
+          year?: number
+        }
+        Relationships: [
           {
-            foreignKeyName: "payroll_runs_validated_by_fkey"
-            columns: ["validated_by"]
+            foreignKeyName: "payslips_payroll_run_id_fkey"
+            columns: ["payroll_run_id"]
+            isOneToOne: false
+            referencedRelation: "payroll_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payslips_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payslips_teacher_id_fkey"
+            columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teachers"
             referencedColumns: ["id"]
@@ -3591,6 +4030,74 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "neurasphere_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_reports: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          report_details: string | null
+          report_reason: string
+          reported_by_neura_id: string
+          reporter_school_id: string
+          reviewed_at: string | null
+          reviewed_by_teacher_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          report_details?: string | null
+          report_reason: string
+          reported_by_neura_id: string
+          reporter_school_id: string
+          reviewed_at?: string | null
+          reviewed_by_teacher_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          report_details?: string | null
+          report_reason?: string
+          reported_by_neura_id?: string
+          reporter_school_id?: string
+          reviewed_at?: string | null
+          reviewed_by_teacher_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "neurasphere_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_reports_reported_by_neura_id_fkey"
+            columns: ["reported_by_neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+          {
+            foreignKeyName: "post_reports_reporter_school_id_fkey"
+            columns: ["reporter_school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_reports_reviewed_by_teacher_id_fkey"
+            columns: ["reviewed_by_teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
             referencedColumns: ["id"]
           },
         ]
@@ -3798,6 +4305,99 @@ export type Database = {
           },
         ]
       }
+      school_analytics_narratives: {
+        Row: {
+          generated_at: string
+          id: string
+          key_insights: string[]
+          month_year: string
+          narrative_text: string
+          neura_id: string | null
+          refresh_count: number
+          school_id: string
+        }
+        Insert: {
+          generated_at?: string
+          id?: string
+          key_insights?: string[]
+          month_year: string
+          narrative_text: string
+          neura_id?: string | null
+          refresh_count?: number
+          school_id: string
+        }
+        Update: {
+          generated_at?: string
+          id?: string
+          key_insights?: string[]
+          month_year?: string
+          narrative_text?: string
+          neura_id?: string | null
+          refresh_count?: number
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_analytics_narratives_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+          {
+            foreignKeyName: "school_analytics_narratives_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      school_assembly_config: {
+        Row: {
+          academic_year_id: string
+          day_of_week: string | null
+          duration_minutes: number | null
+          id: string
+          include_in_schedule: boolean | null
+          position: string | null
+          school_id: string
+        }
+        Insert: {
+          academic_year_id: string
+          day_of_week?: string | null
+          duration_minutes?: number | null
+          id?: string
+          include_in_schedule?: boolean | null
+          position?: string | null
+          school_id: string
+        }
+        Update: {
+          academic_year_id?: string
+          day_of_week?: string | null
+          duration_minutes?: number | null
+          id?: string
+          include_in_schedule?: boolean | null
+          position?: string | null
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_assembly_config_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_assembly_config_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       school_enrollments: {
         Row: {
           admission_number: string | null
@@ -3849,6 +4449,122 @@ export type Database = {
           },
         ]
       }
+      school_group_memberships: {
+        Row: {
+          added_at: string
+          group_id: string
+          id: string
+          school_id: string
+        }
+        Insert: {
+          added_at?: string
+          group_id: string
+          id?: string
+          school_id: string
+        }
+        Update: {
+          added_at?: string
+          group_id?: string
+          id?: string
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_group_memberships_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "school_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_group_memberships_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      school_groups: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id?: string | null
+        }
+        Relationships: []
+      }
+      school_health_scores: {
+        Row: {
+          at_risk_resolution: number | null
+          attendance_score: number | null
+          band: string
+          computed_date: string
+          created_at: string
+          driver_negatives: string[]
+          driver_positives: string[]
+          engagement_score: number | null
+          id: string
+          mastery_score: number | null
+          operational_score: number | null
+          overall_score: number
+          school_id: string
+          score_delta_30d: number | null
+        }
+        Insert: {
+          at_risk_resolution?: number | null
+          attendance_score?: number | null
+          band: string
+          computed_date: string
+          created_at?: string
+          driver_negatives?: string[]
+          driver_positives?: string[]
+          engagement_score?: number | null
+          id?: string
+          mastery_score?: number | null
+          operational_score?: number | null
+          overall_score: number
+          school_id: string
+          score_delta_30d?: number | null
+        }
+        Update: {
+          at_risk_resolution?: number | null
+          attendance_score?: number | null
+          band?: string
+          computed_date?: string
+          created_at?: string
+          driver_negatives?: string[]
+          driver_positives?: string[]
+          engagement_score?: number | null
+          id?: string
+          mastery_score?: number | null
+          operational_score?: number | null
+          overall_score?: number
+          school_id?: string
+          score_delta_30d?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_health_scores_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       school_holidays: {
         Row: {
           academic_year_id: string
@@ -3884,6 +4600,66 @@ export type Database = {
           },
           {
             foreignKeyName: "school_holidays_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      school_period_config: {
+        Row: {
+          academic_year_id: string
+          day_of_week: string
+          id: string
+          is_working_day: boolean | null
+          lunch_after_period: number | null
+          lunch_duration_minutes: number | null
+          period_duration_minutes: number | null
+          school_end_time: string | null
+          school_id: string
+          school_start_time: string | null
+          short_break_after_periods: number[] | null
+          short_break_duration_min: number | null
+        }
+        Insert: {
+          academic_year_id: string
+          day_of_week: string
+          id?: string
+          is_working_day?: boolean | null
+          lunch_after_period?: number | null
+          lunch_duration_minutes?: number | null
+          period_duration_minutes?: number | null
+          school_end_time?: string | null
+          school_id: string
+          school_start_time?: string | null
+          short_break_after_periods?: number[] | null
+          short_break_duration_min?: number | null
+        }
+        Update: {
+          academic_year_id?: string
+          day_of_week?: string
+          id?: string
+          is_working_day?: boolean | null
+          lunch_after_period?: number | null
+          lunch_duration_minutes?: number | null
+          period_duration_minutes?: number | null
+          school_end_time?: string | null
+          school_id?: string
+          school_start_time?: string | null
+          short_break_after_periods?: number[] | null
+          short_break_duration_min?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_period_config_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_period_config_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
@@ -4109,35 +4885,135 @@ export type Database = {
           },
         ]
       }
+      smartpad_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          device_id: string
+          id: string
+          is_active: boolean | null
+          message: string
+          neura_id: string | null
+          notification_channel: string | null
+          notification_sent_at: string | null
+          resolved_at: string | null
+          school_id: string
+          severity: string
+          triggered_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          device_id: string
+          id?: string
+          is_active?: boolean | null
+          message: string
+          neura_id?: string | null
+          notification_channel?: string | null
+          notification_sent_at?: string | null
+          resolved_at?: string | null
+          school_id: string
+          severity: string
+          triggered_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          device_id?: string
+          id?: string
+          is_active?: boolean | null
+          message?: string
+          neura_id?: string | null
+          notification_channel?: string | null
+          notification_sent_at?: string | null
+          resolved_at?: string | null
+          school_id?: string
+          severity?: string
+          triggered_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smartpad_alerts_acknowledged_by_fkey"
+            columns: ["acknowledged_by"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smartpad_alerts_neura_id_fkey"
+            columns: ["neura_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["neura_id"]
+          },
+          {
+            foreignKeyName: "smartpad_alerts_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       smartpad_assignment_history: {
         Row: {
-          academic_year_id: string
+          academic_year_id: string | null
           assigned_at: string
+          condition_at_return: string | null
           created_at: string | null
+          damage_description: string | null
+          damage_photo_url: string | null
           id: string
           neura_id: string
+          notes: string | null
+          recorded_by: string | null
+          repair_completed_at: string | null
+          repair_cost_estimate: number | null
+          repair_required: boolean | null
+          repair_status: string | null
           return_condition: string | null
           returned_at: string | null
           school_id: string
           smartpad_id: string
         }
         Insert: {
-          academic_year_id: string
+          academic_year_id?: string | null
           assigned_at: string
+          condition_at_return?: string | null
           created_at?: string | null
+          damage_description?: string | null
+          damage_photo_url?: string | null
           id?: string
           neura_id: string
+          notes?: string | null
+          recorded_by?: string | null
+          repair_completed_at?: string | null
+          repair_cost_estimate?: number | null
+          repair_required?: boolean | null
+          repair_status?: string | null
           return_condition?: string | null
           returned_at?: string | null
           school_id: string
           smartpad_id: string
         }
         Update: {
-          academic_year_id?: string
+          academic_year_id?: string | null
           assigned_at?: string
+          condition_at_return?: string | null
           created_at?: string | null
+          damage_description?: string | null
+          damage_photo_url?: string | null
           id?: string
           neura_id?: string
+          notes?: string | null
+          recorded_by?: string | null
+          repair_completed_at?: string | null
+          repair_cost_estimate?: number | null
+          repair_required?: boolean | null
+          repair_status?: string | null
           return_condition?: string | null
           returned_at?: string | null
           school_id?: string
@@ -4157,6 +5033,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "students"
             referencedColumns: ["neura_id"]
+          },
+          {
+            foreignKeyName: "smartpad_assignment_history_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "smartpad_assignment_history_school_id_fkey"
@@ -4180,6 +5063,7 @@ export type Database = {
           assigned_at: string | null
           assigned_neura_id: string | null
           battery_pct: number | null
+          breakage_deposit_paid: number | null
           created_at: string | null
           exam_lock_active: boolean | null
           gps_lat: number | null
@@ -4193,19 +5077,26 @@ export type Database = {
           locked: boolean | null
           loss_reported: boolean | null
           loss_reported_at: string | null
+          lost_reported_by: string | null
+          model: string | null
           model_versions: Json | null
           os_version: string | null
+          pending_firmware_version: string | null
           school_id: string
           serial_number: string
           status: Database["public"]["Enums"]["device_status"] | null
           storage_total_mb: number | null
           storage_used_mb: number | null
+          total_repair_cost: number | null
+          total_sessions: number | null
+          total_usage_hours: number | null
         }
         Insert: {
           academic_year_id?: string | null
           assigned_at?: string | null
           assigned_neura_id?: string | null
           battery_pct?: number | null
+          breakage_deposit_paid?: number | null
           created_at?: string | null
           exam_lock_active?: boolean | null
           gps_lat?: number | null
@@ -4219,19 +5110,26 @@ export type Database = {
           locked?: boolean | null
           loss_reported?: boolean | null
           loss_reported_at?: string | null
+          lost_reported_by?: string | null
+          model?: string | null
           model_versions?: Json | null
           os_version?: string | null
+          pending_firmware_version?: string | null
           school_id: string
           serial_number: string
           status?: Database["public"]["Enums"]["device_status"] | null
           storage_total_mb?: number | null
           storage_used_mb?: number | null
+          total_repair_cost?: number | null
+          total_sessions?: number | null
+          total_usage_hours?: number | null
         }
         Update: {
           academic_year_id?: string | null
           assigned_at?: string | null
           assigned_neura_id?: string | null
           battery_pct?: number | null
+          breakage_deposit_paid?: number | null
           created_at?: string | null
           exam_lock_active?: boolean | null
           gps_lat?: number | null
@@ -4245,13 +5143,19 @@ export type Database = {
           locked?: boolean | null
           loss_reported?: boolean | null
           loss_reported_at?: string | null
+          lost_reported_by?: string | null
+          model?: string | null
           model_versions?: Json | null
           os_version?: string | null
+          pending_firmware_version?: string | null
           school_id?: string
           serial_number?: string
           status?: Database["public"]["Enums"]["device_status"] | null
           storage_total_mb?: number | null
           storage_used_mb?: number | null
+          total_repair_cost?: number | null
+          total_sessions?: number | null
+          total_usage_hours?: number | null
         }
         Relationships: [
           {
@@ -4269,7 +5173,121 @@ export type Database = {
             referencedColumns: ["neura_id"]
           },
           {
+            foreignKeyName: "smartpad_devices_lost_reported_by_fkey"
+            columns: ["lost_reported_by"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "smartpad_devices_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smartpad_health_snapshots: {
+        Row: {
+          battery_level: number | null
+          device_id: string
+          firmware_version: string | null
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          school_id: string
+          sessions_count: number | null
+          snapshot_at: string
+          storage_used_mb: number | null
+          sync_type: string | null
+          usage_minutes: number | null
+        }
+        Insert: {
+          battery_level?: number | null
+          device_id: string
+          firmware_version?: string | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          school_id: string
+          sessions_count?: number | null
+          snapshot_at: string
+          storage_used_mb?: number | null
+          sync_type?: string | null
+          usage_minutes?: number | null
+        }
+        Update: {
+          battery_level?: number | null
+          device_id?: string
+          firmware_version?: string | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          school_id?: string
+          sessions_count?: number | null
+          snapshot_at?: string
+          storage_used_mb?: number | null
+          sync_type?: string | null
+          usage_minutes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smartpad_health_snapshots_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smartpad_ota_campaigns: {
+        Row: {
+          completed_at: string | null
+          failed_count: number | null
+          id: string
+          launched_at: string
+          launched_by: string | null
+          school_id: string
+          status: string | null
+          target_device_ids: string[]
+          target_firmware: string
+          updated_count: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          failed_count?: number | null
+          id?: string
+          launched_at?: string
+          launched_by?: string | null
+          school_id: string
+          status?: string | null
+          target_device_ids: string[]
+          target_firmware: string
+          updated_count?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          failed_count?: number | null
+          id?: string
+          launched_at?: string
+          launched_by?: string | null
+          school_id?: string
+          status?: string | null
+          target_device_ids?: string[]
+          target_firmware?: string
+          updated_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smartpad_ota_campaigns_launched_by_fkey"
+            columns: ["launched_by"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smartpad_ota_campaigns_school_id_fkey"
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
@@ -4627,10 +5645,12 @@ export type Database = {
         Row: {
           academic_year_id: string
           academic_year_label: string
+          admission_category: string | null
           board: Database["public"]["Enums"]["board_type"]
           class_year: number
           created_at: string | null
           id: string
+          is_rte_student: boolean
           medium: Database["public"]["Enums"]["medium_type"]
           neura_id: string
           preferred_content_medium:
@@ -4647,10 +5667,12 @@ export type Database = {
         Insert: {
           academic_year_id: string
           academic_year_label: string
+          admission_category?: string | null
           board: Database["public"]["Enums"]["board_type"]
           class_year: number
           created_at?: string | null
           id?: string
+          is_rte_student?: boolean
           medium: Database["public"]["Enums"]["medium_type"]
           neura_id: string
           preferred_content_medium?:
@@ -4667,10 +5689,12 @@ export type Database = {
         Update: {
           academic_year_id?: string
           academic_year_label?: string
+          admission_category?: string | null
           board?: Database["public"]["Enums"]["board_type"]
           class_year?: number
           created_at?: string | null
           id?: string
+          is_rte_student?: boolean
           medium?: Database["public"]["Enums"]["medium_type"]
           neura_id?: string
           preferred_content_medium?:
@@ -4732,8 +5756,8 @@ export type Database = {
           gender: string | null
           nationality: string | null
           neura_id: string
-          religion: string | null
           neuracoin_balance: number
+          religion: string | null
           status: Database["public"]["Enums"]["student_status"] | null
           updated_at: string | null
         }
@@ -4889,6 +5913,78 @@ export type Database = {
           {
             foreignKeyName: "teacher_documents_updated_by_fkey"
             columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_performance_snapshots: {
+        Row: {
+          ai_insight: string | null
+          at_risk_count: number
+          avg_mastery_score: number | null
+          classes_taught: string[]
+          computed_at: string
+          context_flags: string[]
+          engagement_rate: number | null
+          id: string
+          intervention_rate: number | null
+          mastery_velocity: number | null
+          school_id: string
+          snapshot_month: string
+          student_count: number
+          subject: string
+          teacher_id: string
+          vs_school_avg: number | null
+        }
+        Insert: {
+          ai_insight?: string | null
+          at_risk_count?: number
+          avg_mastery_score?: number | null
+          classes_taught?: string[]
+          computed_at?: string
+          context_flags?: string[]
+          engagement_rate?: number | null
+          id?: string
+          intervention_rate?: number | null
+          mastery_velocity?: number | null
+          school_id: string
+          snapshot_month: string
+          student_count?: number
+          subject: string
+          teacher_id: string
+          vs_school_avg?: number | null
+        }
+        Update: {
+          ai_insight?: string | null
+          at_risk_count?: number
+          avg_mastery_score?: number | null
+          classes_taught?: string[]
+          computed_at?: string
+          context_flags?: string[]
+          engagement_rate?: number | null
+          id?: string
+          intervention_rate?: number | null
+          mastery_velocity?: number | null
+          school_id?: string
+          snapshot_month?: string
+          student_count?: number
+          subject?: string
+          teacher_id?: string
+          vs_school_avg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_performance_snapshots_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_performance_snapshots_teacher_id_fkey"
+            columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teachers"
             referencedColumns: ["id"]
@@ -5168,14 +6264,147 @@ export type Database = {
           },
         ]
       }
+      timetable_generations: {
+        Row: {
+          academic_year_id: string
+          conflict_count: number | null
+          generated_at: string | null
+          generated_by: string | null
+          generation_seed: string | null
+          id: string
+          school_id: string
+          status: string | null
+          total_entries: number | null
+        }
+        Insert: {
+          academic_year_id: string
+          conflict_count?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          generation_seed?: string | null
+          id?: string
+          school_id: string
+          status?: string | null
+          total_entries?: number | null
+        }
+        Update: {
+          academic_year_id?: string
+          conflict_count?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          generation_seed?: string | null
+          id?: string
+          school_id?: string
+          status?: string | null
+          total_entries?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timetable_generations_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timetable_generations_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timetable_generations_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      timetable_requirements: {
+        Row: {
+          academic_year_id: string
+          class_year: number
+          color_hex: string | null
+          display_name: string | null
+          double_period_count: number | null
+          eca_category: string | null
+          id: string
+          needs_double_period: boolean | null
+          periods_per_week: number
+          preferred_position: string | null
+          school_id: string
+          subject: string
+          subject_type: string
+          teacher_id: string | null
+        }
+        Insert: {
+          academic_year_id: string
+          class_year: number
+          color_hex?: string | null
+          display_name?: string | null
+          double_period_count?: number | null
+          eca_category?: string | null
+          id?: string
+          needs_double_period?: boolean | null
+          periods_per_week?: number
+          preferred_position?: string | null
+          school_id: string
+          subject: string
+          subject_type?: string
+          teacher_id?: string | null
+        }
+        Update: {
+          academic_year_id?: string
+          class_year?: number
+          color_hex?: string | null
+          display_name?: string | null
+          double_period_count?: number | null
+          eca_category?: string | null
+          id?: string
+          needs_double_period?: boolean | null
+          periods_per_week?: number
+          preferred_position?: string | null
+          school_id?: string
+          subject?: string
+          subject_type?: string
+          teacher_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timetable_requirements_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timetable_requirements_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timetable_requirements_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       timetable_slots: {
         Row: {
           academic_year_id: string
           class_year: number
           created_at: string | null
           day_of_week: Database["public"]["Enums"]["day_of_week"]
+          double_period_end_time: string | null
           end_time: string
           id: string
+          is_double_period: boolean | null
           period_number: number
           period_type: string | null
           room_number: string | null
@@ -5183,6 +6412,7 @@ export type Database = {
           section: string
           start_time: string
           subject: string
+          subject_type: string | null
           teacher_id: string | null
         }
         Insert: {
@@ -5190,8 +6420,10 @@ export type Database = {
           class_year: number
           created_at?: string | null
           day_of_week: Database["public"]["Enums"]["day_of_week"]
+          double_period_end_time?: string | null
           end_time: string
           id?: string
+          is_double_period?: boolean | null
           period_number: number
           period_type?: string | null
           room_number?: string | null
@@ -5199,6 +6431,7 @@ export type Database = {
           section: string
           start_time: string
           subject: string
+          subject_type?: string | null
           teacher_id?: string | null
         }
         Update: {
@@ -5206,8 +6439,10 @@ export type Database = {
           class_year?: number
           created_at?: string | null
           day_of_week?: Database["public"]["Enums"]["day_of_week"]
+          double_period_end_time?: string | null
           end_time?: string
           id?: string
+          is_double_period?: boolean | null
           period_number?: number
           period_type?: string | null
           room_number?: string | null
@@ -5215,6 +6450,7 @@ export type Database = {
           section?: string
           start_time?: string
           subject?: string
+          subject_type?: string | null
           teacher_id?: string | null
         }
         Relationships: [
@@ -5302,6 +6538,54 @@ export type Database = {
             columns: ["used_by_school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_bookmarks: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          school_id: string
+          sort_order: number
+          teacher_id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          school_id: string
+          sort_order?: number
+          teacher_id: string
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          school_id?: string
+          sort_order?: number
+          teacher_id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bookmarks_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bookmarks_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
             referencedColumns: ["id"]
           },
         ]
@@ -5425,6 +6709,10 @@ export type Database = {
         Args: { p_school_id: string; p_year_label: string }
         Returns: string
       }
+      increment_neuracoin_balance: {
+        Args: { p_amount: number; p_neura_id: string }
+        Returns: undefined
+      }
       increment_school_sequence: {
         Args: { p_state_code: string; p_year: number }
         Returns: number
@@ -5432,21 +6720,19 @@ export type Database = {
       is_my_child: { Args: { check_neura_id: string }; Returns: boolean }
       is_my_school: { Args: { school_id: string }; Returns: boolean }
       is_school_admin: { Args: never; Returns: boolean }
-      increment_neuracoin_balance: {
-        Args: { p_neura_id: string; p_amount: number }
-        Returns: undefined
-      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       age_band: "FOUNDATION" | "ELEMENTARY" | "MIDDLE" | "SECONDARY"
+      ai_score: "SAFE" | "REVIEW" | "REMOVE"
       attendance_status:
         | "PRESENT"
         | "ABSENT"
         | "LATE"
         | "APPROVED_LEAVE"
         | "HOLIDAY"
+      author_type: "STUDENT" | "PRINCIPAL" | "TEACHER" | "SYSTEM"
       behaviour_category:
         | "POSITIVE_RECOGNITION"
         | "DISRUPTION"
@@ -5472,14 +6758,6 @@ export type Database = {
         | "SIBLING_SECOND"
         | "SIBLING_THIRD_PLUS"
       day_of_week: "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN"
-      exam_status:
-        | "DRAFT"
-        | "SCHEDULED"
-        | "IN_PROGRESS"
-        | "MARKS_PENDING"
-        | "PUBLISHED"
-        | "ARCHIVED"
-      exam_type: "FA1" | "FA2" | "FA3" | "FA4" | "SA1" | "SA2" | "UNIT_TEST" | "PTM"
       device_status:
         | "ACTIVE"
         | "LOCKED"
@@ -5487,6 +6765,22 @@ export type Database = {
         | "MAINTENANCE"
         | "DECOMMISSIONED"
       employment_type: "REGULAR" | "CONTRACT" | "PART_TIME" | "VISITING"
+      exam_status:
+        | "DRAFT"
+        | "SCHEDULED"
+        | "IN_PROGRESS"
+        | "MARKS_PENDING"
+        | "PUBLISHED"
+        | "ARCHIVED"
+      exam_type:
+        | "FA1"
+        | "FA2"
+        | "FA3"
+        | "FA4"
+        | "SA1"
+        | "SA2"
+        | "UNIT_TEST"
+        | "PTM"
       fee_category: "GENERAL" | "SC_ST" | "OBC" | "EWS" | "FREE"
       fee_head:
         | "ADMISSION"
@@ -5522,7 +6816,13 @@ export type Database = {
         | "OTHER"
       mastery_classification: "MASTERED" | "GOOD" | "DEVELOPING" | "AT_RISK"
       medium_type: "ENGLISH" | "TELUGU" | "BOTH"
-      moderation_status: "PENDING" | "APPROVED" | "REJECTED" | "HUMAN_REVIEW"
+      moderation_status:
+        | "PENDING"
+        | "APPROVED"
+        | "REJECTED"
+        | "HUMAN_REVIEW"
+        | "REMOVED_BY_AI"
+        | "REMOVED_BY_PRINCIPAL"
       neuracoin_transaction_type:
         | "EXAM_REWARD"
         | "ATTENDANCE_REWARD"
@@ -5536,6 +6836,13 @@ export type Database = {
       notification_status: "PENDING" | "SENT" | "DELIVERED" | "READ" | "FAILED"
       pattern_type: "CURRICULUM_GAP" | "TEACHING_PATTERN" | "MIXED_SIGNAL"
       payment_mode: "CASH" | "UPI" | "CHEQUE" | "NEFT" | "ONLINE"
+      post_category:
+        | "GENERAL"
+        | "STUDY_TIP"
+        | "ACHIEVEMENT"
+        | "ANNOUNCEMENT"
+        | "QUESTION"
+        | "PROJECT"
       post_type: "ACHIEVEMENT" | "MANUAL" | "DOUBT" | "CONTEXTUAL"
       school_type: "GOVERNMENT" | "PRIVATE" | "AIDED"
       student_status: "ACTIVE" | "ALUMNI" | "TRANSFERRING" | "DEACTIVATED"
@@ -5679,12 +6986,10 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       age_band: ["FOUNDATION", "ELEMENTARY", "MIDDLE", "SECONDARY"],
+      ai_score: ["SAFE", "REVIEW", "REMOVE"],
       attendance_status: [
         "PRESENT",
         "ABSENT",
@@ -5692,6 +6997,7 @@ export const Constants = {
         "APPROVED_LEAVE",
         "HOLIDAY",
       ],
+      author_type: ["STUDENT", "PRINCIPAL", "TEACHER", "SYSTEM"],
       behaviour_category: [
         "POSITIVE_RECOGNITION",
         "DISRUPTION",
@@ -5727,6 +7033,15 @@ export const Constants = {
         "DECOMMISSIONED",
       ],
       employment_type: ["REGULAR", "CONTRACT", "PART_TIME", "VISITING"],
+      exam_status: [
+        "DRAFT",
+        "SCHEDULED",
+        "IN_PROGRESS",
+        "MARKS_PENDING",
+        "PUBLISHED",
+        "ARCHIVED",
+      ],
+      exam_type: ["FA1", "FA2", "FA3", "FA4", "SA1", "SA2", "UNIT_TEST", "PTM"],
       fee_category: ["GENERAL", "SC_ST", "OBC", "EWS", "FREE"],
       fee_head: [
         "ADMISSION",
@@ -5756,12 +7071,36 @@ export const Constants = {
       leave_type: ["CL", "SL", "EL", "MATERNITY", "PATERNITY", "LOP", "OTHER"],
       mastery_classification: ["MASTERED", "GOOD", "DEVELOPING", "AT_RISK"],
       medium_type: ["ENGLISH", "TELUGU", "BOTH"],
-      moderation_status: ["PENDING", "APPROVED", "REJECTED", "HUMAN_REVIEW"],
+      moderation_status: [
+        "PENDING",
+        "APPROVED",
+        "REJECTED",
+        "HUMAN_REVIEW",
+        "REMOVED_BY_AI",
+        "REMOVED_BY_PRINCIPAL",
+      ],
+      neuracoin_transaction_type: [
+        "EXAM_REWARD",
+        "ATTENDANCE_REWARD",
+        "HOMEWORK_REWARD",
+        "SUBJECT_TOPPER_BONUS",
+        "MANUAL_CREDIT",
+        "MANUAL_DEDUCTION",
+        "REDEMPTION",
+      ],
       notification_channel: ["FCM", "SMS", "EMAIL", "IN_APP"],
       notification_severity: ["S1", "S2", "S3", "S4"],
       notification_status: ["PENDING", "SENT", "DELIVERED", "READ", "FAILED"],
       pattern_type: ["CURRICULUM_GAP", "TEACHING_PATTERN", "MIXED_SIGNAL"],
       payment_mode: ["CASH", "UPI", "CHEQUE", "NEFT", "ONLINE"],
+      post_category: [
+        "GENERAL",
+        "STUDY_TIP",
+        "ACHIEVEMENT",
+        "ANNOUNCEMENT",
+        "QUESTION",
+        "PROJECT",
+      ],
       post_type: ["ACHIEVEMENT", "MANUAL", "DOUBT", "CONTEXTUAL"],
       school_type: ["GOVERNMENT", "PRIVATE", "AIDED"],
       student_status: ["ACTIVE", "ALUMNI", "TRANSFERRING", "DEACTIVATED"],

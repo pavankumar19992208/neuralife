@@ -1,0 +1,403 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:10px 0;font-family:Georgia,serif;display:flex;flex-direction:column;gap:12px}
+.pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font-size:11px;padding:4px 11px;border-radius:99px;border:1px solid #C8C4BC;background:transparent;color:#7A7670;cursor:pointer}
+.pill.on{background:#1A1814;color:#F5F2EC;border-color:#1A1814}
+.device{background:#F5F2EC;border:3px solid #2A2823;border-radius:14px;overflow:hidden;max-width:340px;margin:0 auto;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.sbar{background:#2A2823;padding:5px 13px;display:flex;justify-content:space-between;align-items:center}
+.st{font-size:9px;color:#888;font-family:monospace}
+.st.hi{color:#E8E4DC}
+.screen{display:none;flex-direction:column;min-height:440px;background:#F5F2EC;color:#1A1814}
+.screen.on{display:flex}
+/* shared */
+.sec{padding:10px 13px;border-bottom:1px solid #D8D4CC}
+.lbl{font-size:9px;font-weight:700;color:#7A7670;text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px}
+/* period hero */
+.hero{background:#1A1814;border-radius:8px;padding:11px 13px;margin-bottom:7px}
+.hero-subj{font-size:16px;font-weight:700;color:#F5F2EC}
+.hero-meta{font-size:9px;color:#7A7670;margin-top:2px}
+.hero-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:7px}
+.hero-timer{font-size:22px;font-weight:700;color:#F5F2EC;font-family:monospace}
+/* quick buttons */
+.qbtn{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EDEAE4;border-radius:7px;margin-bottom:5px;cursor:pointer;border:1px solid #D8D4CC}
+.qi{font-size:14px;width:18px;text-align:center}
+.qt{font-size:11px;font-weight:700;color:#1A1814;flex:1}
+.qs{font-size:9px;color:#7A7670}
+/* schedule */
+.si{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid #E8E4DC}
+.si:last-child{border-bottom:none}
+.si-t{font-size:9px;color:#7A7670;font-family:monospace;min-width:48px}
+.si-s{font-size:11px;font-weight:700;color:#1A1814;flex:1}
+.si-now{background:#1A1814;color:#F5F2EC;border-radius:3px;padding:1px 5px;font-size:8px;font-weight:700}
+.si-done{font-size:9px;color:#C8C4BC;text-decoration:line-through}
+/* home mode */
+.hw{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid #E8E4DC}
+.hw:last-child{border-bottom:none}
+.hw-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hw-t{font-size:11px;font-weight:700;flex:1}
+.hw-d{font-size:9px;color:#7A7670}
+.subj-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.stile{padding:9px 10px;background:#EDEAE4;border-radius:7px;border:1px solid #D8D4CC;cursor:pointer}
+.stile-icon{font-size:13px;margin-bottom:2px}
+.stile-name{font-size:11px;font-weight:700}
+.stile-pct{font-size:9px;color:#7A7670}
+.mrow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #E8E4DC}
+.mrow:last-child{border-bottom:none}
+.mlbl{font-size:11px;flex:1}
+.mbar{background:#D8D4CC;border-radius:99px;height:4px;width:56px;overflow:hidden}
+.mfill{height:100%;border-radius:99px;background:#1A1814}
+.mpct{font-size:9px;color:#7A7670;min-width:24px;text-align:right}
+/* canvas */
+.toolbar{background:#1A1814;padding:7px 11px;display:flex;align-items:center;gap:4px}
+.tb{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;background:transparent;border:none;color:#E8E4DC}
+.tb.on{background:#3A3830}
+.tbsep{width:1px;height:16px;background:#3A3830;margin:0 2px}
+.canvas{flex:1;background:#F5F2EC;position:relative;min-height:270px;padding:13px}
+.ruled{width:100%;height:1px;background:#E0DCD4;position:absolute;left:0}
+.writing{position:absolute;font-size:11px;line-height:1.8;font-family:Georgia,serif}
+.cfoot{background:#EDEAE4;padding:4px 11px;display:flex;justify-content:space-between;border-top:1px solid #D8D4CC}
+.cf{font-size:8px;color:#7A7670}
+/* hint */
+.hint-box{position:absolute;bottom:8px;left:11px;right:11px;background:#1A1814;border-radius:9px;padding:10px 12px}
+.hint-stage{font-size:8px;color:#7A7670;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.hint-text{font-size:11px;color:#E8E4DC;line-height:1.5}
+.hint-acts{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.hbtn{font-size:9px;padding:3px 9px;border-radius:99px;border:1px solid #3A3830;background:transparent;color:#AAA69E;cursor:pointer}
+.hbtn.p{border-color:#7A7670;color:#E8E4DC}
+/* reader */
+.rhead{padding:9px 12px;border-bottom:1px solid #D8D4CC;display:flex;justify-content:space-between;align-items:flex-start}
+.rh-t{font-size:12px;font-weight:700}
+.rh-s{font-size:9px;color:#7A7670;margin-top:1px}
+.rbody{flex:1;padding:13px 15px;overflow-y:auto}
+.rh2{font-size:13px;font-weight:700;margin-bottom:7px}
+.rp{font-size:11px;line-height:1.8;margin-bottom:8px}
+.rdiag{background:#EDEAE4;border-radius:7px;padding:11px;text-align:center;border:1px solid #D8D4CC;margin:7px 0}
+.rdiag-lbl{font-size:9px;color:#7A7670;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.rformula{font-size:12px;font-weight:700;font-family:monospace}
+.rcap{font-size:9px;color:#7A7670;margin-top:4px}
+.rfoot{padding:6px 12px;border-top:1px solid #D8D4CC;display:flex;justify-content:space-between;align-items:center}
+.rf-t{font-size:9px;color:#7A7670}
+.rnav{display:flex;gap:5px}
+.rnbtn{font-size:9px;padding:3px 9px;border-radius:99px;border:1px solid #D8D4CC;background:transparent;color:#1A1814;cursor:pointer}
+/* exam */
+.exam-lock-bar{background:#1A1814;padding:6px 13px;display:flex;justify-content:space-between}
+.elb-t{font-size:10px;font-weight:700;color:#F5F2EC}
+.elb-s{font-size:9px;color:#7A7670}
+.exam-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px}
+/* settings */
+.ssec{padding:9px 12px;border-bottom:1px solid #D8D4CC}
+.ssec-t{font-size:9px;font-weight:700;color:#7A7670;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.srow{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid #E8E4DC}
+.srow:last-child{border-bottom:none}
+.slbl{font-size:11px;flex:1}
+.sval{font-size:9px;color:#7A7670}
+.tog{width:28px;height:16px;border-radius:99px;position:relative;cursor:pointer;flex-shrink:0}
+.tog.on{background:#1A1814}.tog.off{background:#D8D4CC}
+.togdot{width:12px;height:12px;border-radius:50%;background:#F5F2EC;position:absolute;top:2px}
+.tog.on .togdot{right:2px}.tog.off .togdot{left:2px}
+/* bottom nav */
+.bnav{background:#1A1814;padding:6px 0;display:flex}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px 0}
+.bni-i{font-size:14px;color:#7A7670}
+.bni-l{font-size:7px;color:#7A7670;text-transform:uppercase;letter-spacing:.4px}
+.bni.on .bni-i,.bni.on .bni-l{color:#F5F2EC}
+/* progress */
+.prog-subj{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #E8E4DC}
+.prog-subj:last-child{border-bottom:none}
+.prog-name{font-size:11px;font-weight:700;flex:1}
+.prog-bar-w{background:#D8D4CC;border-radius:99px;height:6px;width:80px;overflow:hidden}
+.prog-bar-f{height:100%;border-radius:99px}
+.prog-stars{font-size:11px;letter-spacing:1px}
+</style>
+
+<div class="wrap">
+<div class="pills" id="pills">
+  <button class="pill on" onclick="go('school')">Home · school</button>
+  <button class="pill" onclick="go('homem')">Home · home</button>
+  <button class="pill" onclick="go('canvas')">Canvas</button>
+  <button class="pill" onclick="go('hint')">Hint overlay</button>
+  <button class="pill" onclick="go('reader')">E-reader</button>
+  <button class="pill" onclick="go('exam')">Exam lock</button>
+  <button class="pill" onclick="go('progress')">Progress</button>
+  <button class="pill" onclick="go('settings')">Settings</button>
+</div>
+
+<div class="device">
+<div class="sbar">
+  <span class="st hi" id="stlbl">NeuraOS · School mode</span>
+  <div style="display:flex;gap:7px"><span class="st">📶</span><span class="st">🔋 88%</span><span class="st hi">9:15 AM</span><span class="st">✓ Synced</span></div>
+</div>
+
+<!-- SCHOOL HOME -->
+<div class="screen on" id="s-school">
+  <div class="sec">
+    <div class="hero">
+      <div class="hero-subj">Mathematics</div>
+      <div class="hero-meta">K. Ramesh · Room 4 · Chapter 4 — Quadratic Equations</div>
+      <div class="hero-row">
+        <span style="font-size:9px;color:#7A7670">Ends in</span>
+        <span class="hero-timer">28:44</span>
+      </div>
+    </div>
+    <div class="qbtn" onclick="go('canvas')">
+      <div class="qi">✏️</div>
+      <div style="flex:1"><div class="qt">Open Maths Canvas</div><div class="qs">Today's classwork · free writing</div></div>
+      <span style="color:#7A7670;font-size:14px">›</span>
+    </div>
+    <div class="qbtn" onclick="go('reader')">
+      <div class="qi">📖</div>
+      <div style="flex:1"><div class="qt">Open Textbook</div><div class="qs">Chapter 4 · page 48</div></div>
+      <span style="color:#7A7670;font-size:14px">›</span>
+    </div>
+  </div>
+  <div class="sec" style="border-bottom:none">
+    <div class="lbl">Today's schedule</div>
+    <div class="si"><div class="si-t">8:00–8:45</div><div class="si-s">Mathematics</div><span class="si-done">done</span></div>
+    <div class="si" style="background:#EDEAE4;border-radius:5px;padding:6px 8px">
+      <div class="si-t">8:45–9:30</div><div class="si-s">Mathematics</div><span class="si-now">NOW</span>
+    </div>
+    <div class="si"><div class="si-t">10:00–10:45</div><div class="si-s">Science</div></div>
+    <div class="si"><div class="si-t">11:30–12:15</div><div class="si-s">Telugu</div></div>
+    <div class="si"><div class="si-t">1:45–2:30</div><div class="si-s">English</div></div>
+  </div>
+</div>
+
+<!-- HOME MODE -->
+<div class="screen" id="s-homem">
+  <div class="sec">
+    <div class="lbl">Homework due</div>
+    <div class="hw"><div class="hw-dot" style="background:#1A1814"></div><div class="hw-t">Ch 4 Practice Problems · Maths</div><div class="hw-d">Tomorrow</div></div>
+    <div class="hw"><div class="hw-dot" style="background:#7A7670"></div><div class="hw-t">Force &amp; Laws Reading · Science</div><div class="hw-d">Sep 3</div></div>
+    <div class="hw"><div class="hw-dot" style="background:#C8C4BC"></div><div class="hw-t">Chapter 2 Grammar · Telugu</div><div class="hw-d">Sep 5</div></div>
+  </div>
+  <div class="sec">
+    <div class="lbl">Open a subject</div>
+    <div class="subj-grid">
+      <div class="stile" onclick="go('canvas')"><div class="stile-icon">📐</div><div class="stile-name">Maths</div><div class="stile-pct">82% mastery</div></div>
+      <div class="stile"><div class="stile-icon">🔬</div><div class="stile-name">Science</div><div class="stile-pct">74% mastery</div></div>
+      <div class="stile"><div class="stile-icon">📖</div><div class="stile-name">Telugu ⚠️</div><div class="stile-pct">38% · needs work</div></div>
+      <div class="stile" onclick="go('reader')"><div class="stile-icon">📚</div><div class="stile-name">E-Library</div><div class="stile-pct">All subjects</div></div>
+    </div>
+  </div>
+  <div class="sec" style="border-bottom:none">
+    <div class="lbl">Needs attention</div>
+    <div class="mrow"><div class="mlbl">Telugu · Synonyms</div><div class="mbar"><div class="mfill" style="width:38%"></div></div><div class="mpct">38%</div></div>
+    <div class="mrow"><div class="mlbl">Social Studies · Ch 3</div><div class="mbar"><div class="mfill" style="width:52%"></div></div><div class="mpct">52%</div></div>
+    <div class="mrow"><div class="mlbl">Maths · Polynomials</div><div class="mbar"><div class="mfill" style="width:61%"></div></div><div class="mpct">61%</div></div>
+  </div>
+</div>
+
+<!-- CANVAS -->
+<div class="screen" id="s-canvas">
+  <div class="toolbar">
+    <button class="tb on" title="Pen">🖊️</button>
+    <button class="tb" title="Pencil">✏️</button>
+    <button class="tb" title="Highlighter">🖌️</button>
+    <button class="tb" title="Eraser">⬜</button>
+    <div class="tbsep"></div>
+    <button class="tb" title="Ruler">📏</button>
+    <button class="tb" title="Shapes">◻️</button>
+    <button class="tb" title="Text" style="font-size:10px;font-weight:700">T</button>
+    <div class="tbsep"></div>
+    <button class="tb" title="Undo">↩️</button>
+    <button class="tb" title="Redo">↪️</button>
+    <button class="tb" title="Pages">📄</button>
+    <div style="margin-left:auto"><span style="font-size:9px;color:#7A7670">Maths · p.3 · free canvas</span></div>
+  </div>
+  <div class="canvas">
+    <div class="ruled" style="top:26px"></div><div class="ruled" style="top:52px"></div>
+    <div class="ruled" style="top:78px"></div><div class="ruled" style="top:104px"></div>
+    <div class="ruled" style="top:130px"></div><div class="ruled" style="top:156px"></div>
+    <div class="ruled" style="top:182px"></div><div class="ruled" style="top:208px"></div>
+    <div class="ruled" style="top:234px"></div>
+    <div class="writing" style="top:5px;left:13px">
+      <div style="margin-bottom:3px">Q3. Solve: x² + 5x + 6 = 0</div>
+      <div style="font-style:italic;color:#5A5650;font-size:10px">Using factorisation:</div>
+      <div>(x + 2)(x + 3) = 0</div>
+      <div>∴ x = −2 or x = −3</div>
+      <div style="margin-top:5px;color:#7A7670;font-size:10px">Check: (−2)²+5(−2)+6 = 0 ✓</div>
+    </div>
+    <div style="position:absolute;bottom:5px;right:7px;background:#EDEAE4;padding:2px 7px;border-radius:99px;border:1px solid #D8D4CC;display:flex;align-items:center;gap:3px">
+      <div style="width:4px;height:4px;border-radius:50%;background:#4A4A4A"></div>
+      <span style="font-size:8px;color:#7A7670">Edge AI · watching</span>
+    </div>
+  </div>
+  <div class="cfoot">
+    <span class="cf">Touch disabled on canvas · stylus only · Palm rejection active</span>
+    <span class="cf">Unlimited pages</span>
+  </div>
+</div>
+
+<!-- HINT OVERLAY -->
+<div class="screen" id="s-hint">
+  <div class="toolbar">
+    <button class="tb on">🖊️</button><button class="tb">✏️</button><button class="tb">⬜</button>
+    <div class="tbsep"></div><button class="tb">↩️</button>
+    <div style="margin-left:auto"><span style="font-size:9px;color:#7A7670">Maths · p.3</span></div>
+  </div>
+  <div class="canvas" style="position:relative">
+    <div class="ruled" style="top:26px"></div><div class="ruled" style="top:52px"></div>
+    <div class="ruled" style="top:78px"></div><div class="ruled" style="top:104px"></div>
+    <div class="writing" style="top:5px;left:13px">
+      <div>Q7. Solve: 2x² + 3x − 2 = 0</div>
+      <div style="color:#C8C4BC;font-style:italic;font-size:10px;margin-top:4px">... stuck for 90 seconds ...</div>
+    </div>
+    <div class="hint-box">
+      <div class="hint-stage">💡 Stage 2 of 3 · stuck 90s · Socratic question</div>
+      <div class="hint-text">The coefficient of x² is 2, not 1. What happens if you divide the whole equation by 2 first?</div>
+      <div class="hint-acts">
+        <button class="hbtn p" onclick="go('canvas')">Got it, let me try</button>
+        <button class="hbtn">Show example →</button>
+        <button class="hbtn" style="margin-left:auto">Save to doubt queue</button>
+      </div>
+    </div>
+  </div>
+  <div class="cfoot"><span class="cf">Hints on · pause 24h in settings</span><span class="cf">Stage 2 of 3</span></div>
+</div>
+
+<!-- E-READER -->
+<div class="screen" id="s-reader">
+  <div class="rhead">
+    <div><div class="rh-t">Chapter 4 · Quadratic Equations</div><div class="rh-s">Mathematics · Class 10 · AP State · Page 3 of 18</div></div>
+    <div style="display:flex;gap:4px">
+      <button style="font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid #D8D4CC;background:transparent;cursor:pointer">🖊️</button>
+      <button style="font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid #D8D4CC;background:transparent;cursor:pointer">🔍</button>
+    </div>
+  </div>
+  <div class="rbody">
+    <div class="rh2">4.2 Solution by Factorisation</div>
+    <div class="rp">A quadratic equation ax² + bx + c = 0 can be solved by expressing bx as a sum of two terms whose product equals ac.</div>
+    <div class="rdiag">
+      <div class="rdiag-lbl">Standard form decomposition</div>
+      <div class="rformula">ax² + bx + c = 0</div>
+      <div style="font-size:10px;color:#7A7670;margin:4px 0">Find p, q: p + q = b · p × q = ac</div>
+      <div class="rformula">(x + p/a)(x + q/a) = 0</div>
+      <div class="rcap">Figure 4.3 — Factorisation method</div>
+    </div>
+    <div class="rp">This works when b² − 4ac is a perfect square. Otherwise use the quadratic formula.</div>
+  </div>
+  <div class="rfoot">
+    <div class="rf-t">Page 3 / 18 · 17% complete</div>
+    <div class="rnav"><button class="rnbtn">‹ Prev</button><button class="rnbtn">Next ›</button></div>
+  </div>
+</div>
+
+<!-- EXAM LOCK -->
+<div class="screen" id="s-exam">
+  <div class="exam-lock-bar"><span class="elb-t">⚠ EXAM MODE ACTIVE</span><span class="elb-s">Vikas High School · Sep 15</span></div>
+  <div class="exam-body">
+    <div style="font-size:34px;margin-bottom:9px">📝</div>
+    <div style="font-size:15px;font-weight:700;text-align:center">Mathematics Mid-Term</div>
+    <div style="font-size:10px;color:#7A7670;text-align:center;margin-top:5px;line-height:1.5">Class 10-A · Locked by K. Ramesh<br>Only blank writing canvas available</div>
+    <div style="font-size:30px;font-weight:700;font-family:monospace;letter-spacing:2px;margin:14px 0">01:24:38</div>
+    <div style="font-size:9px;color:#7A7670;font-family:monospace;margin-bottom:14px">Time remaining</div>
+    <button onclick="go('canvas')" style="width:100%;padding:10px;border-radius:8px;border:1px solid #D8D4CC;background:#EDEAE4;font-size:12px;font-weight:700;cursor:pointer;font-family:Georgia,serif">Open Blank Writing Canvas</button>
+    <div style="font-size:9px;color:#7A7670;text-align:center;margin-top:10px;line-height:1.6">Textbooks · notes · hints all locked<br>Lock ends at 11:30 AM automatically<br>Device location is being tracked</div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="screen" id="s-progress">
+  <div class="sec">
+    <div class="lbl">My mastery · Class 10 · Sep 2025</div>
+    <div class="prog-subj">
+      <div class="prog-name">Mathematics</div>
+      <div class="prog-bar-w"><div class="prog-bar-f" style="width:82%;background:#1A1814"></div></div>
+      <div class="prog-stars">★★★★☆</div>
+    </div>
+    <div class="prog-subj">
+      <div class="prog-name">Science</div>
+      <div class="prog-bar-w"><div class="prog-bar-f" style="width:74%;background:#1A1814"></div></div>
+      <div class="prog-stars">★★★★☆</div>
+    </div>
+    <div class="prog-subj">
+      <div class="prog-name">English</div>
+      <div class="prog-bar-w"><div class="prog-bar-f" style="width:68%;background:#1A1814"></div></div>
+      <div class="prog-stars">★★★☆☆</div>
+    </div>
+    <div class="prog-subj">
+      <div class="prog-name">Telugu ⚠️</div>
+      <div class="prog-bar-w"><div class="prog-bar-f" style="width:38%;background:#7A7670"></div></div>
+      <div class="prog-stars">★★☆☆☆</div>
+    </div>
+    <div class="prog-subj">
+      <div class="prog-name">Social Studies</div>
+      <div class="prog-bar-w"><div class="prog-bar-f" style="width:59%;background:#1A1814"></div></div>
+      <div class="prog-stars">★★★☆☆</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="lbl">Writing skills this week</div>
+    <div class="mrow"><div class="mlbl">Handwriting clarity</div><div class="mbar"><div class="mfill" style="width:74%"></div></div><div class="mpct">74</div></div>
+    <div class="mrow"><div class="mlbl">Spelling accuracy</div><div class="mbar"><div class="mfill" style="width:81%"></div></div><div class="mpct">81%</div></div>
+    <div class="mrow"><div class="mlbl">Writing speed</div><div class="mbar"><div class="mfill" style="width:60%"></div></div><div class="mpct">18wpm</div></div>
+  </div>
+  <div class="sec" style="border-bottom:none">
+    <div class="lbl">Activity streak</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <div style="width:22px;height:22px;background:#1A1814;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#F5F2EC">M</div>
+      <div style="width:22px;height:22px;background:#1A1814;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#F5F2EC">T</div>
+      <div style="width:22px;height:22px;background:#1A1814;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#F5F2EC">W</div>
+      <div style="width:22px;height:22px;background:#1A1814;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#F5F2EC">T</div>
+      <div style="width:22px;height:22px;background:#EDEAE4;border-radius:4px;border:1px solid #D8D4CC;display:flex;align-items:center;justify-content:center;font-size:8px;color:#7A7670">F</div>
+    </div>
+    <div style="font-size:9px;color:#7A7670;margin-top:5px">4-day streak this week · 23 total school days active</div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="ssec">
+    <div class="ssec-t">Display</div>
+    <div class="srow"><div class="slbl">Theme</div><div class="sval">Paper (dark on white) ›</div></div>
+    <div class="srow"><div class="slbl">Text size</div><div class="sval">Medium ›</div></div>
+    <div class="srow"><div class="slbl">E-Ink refresh mode</div><div class="sval">Auto ›</div></div>
+  </div>
+  <div class="ssec">
+    <div class="ssec-t">Writing</div>
+    <div class="srow"><div class="slbl">Palm rejection</div><div class="tog on"><div class="togdot"></div></div></div>
+    <div class="srow"><div class="slbl">Canvas lines</div><div class="sval">Ruled ›</div></div>
+    <div class="srow"><div class="slbl">Left-hand mode</div><div class="tog off"><div class="togdot"></div></div></div>
+    <div class="srow"><div class="slbl">Pen pressure sensitivity</div><div class="sval">Medium ›</div></div>
+  </div>
+  <div class="ssec">
+    <div class="ssec-t">Learning</div>
+    <div class="srow"><div class="slbl">Hint system</div><div class="tog on"><div class="togdot"></div></div></div>
+    <div class="srow"><div class="slbl">Pause hints for 24 hours</div><div class="sval">Tap to pause ›</div></div>
+    <div class="srow"><div class="slbl">Focus mode during writing</div><div class="tog on"><div class="togdot"></div></div></div>
+    <div class="srow"><div class="slbl">Mastery rings on home</div><div class="tog on"><div class="togdot"></div></div></div>
+  </div>
+  <div class="ssec" style="border-bottom:none">
+    <div class="ssec-t">Device</div>
+    <div class="srow"><div class="slbl">Language</div><div class="sval">English ›</div></div>
+    <div class="srow"><div class="slbl">NeuraOS version</div><div class="sval">1.4.2</div></div>
+    <div class="srow"><div class="slbl">Storage used</div><div class="sval">4.2 / 32 GB</div></div>
+    <div class="srow"><div class="slbl">Last synced</div><div class="sval">Today 8:55 AM</div></div>
+  </div>
+</div>
+
+<div class="bnav">
+  <div class="bni on" onclick="go('school')"><div class="bni-i">🏠</div><div class="bni-l">Home</div></div>
+  <div class="bni" onclick="go('canvas')"><div class="bni-i">✏️</div><div class="bni-l">Write</div></div>
+  <div class="bni" onclick="go('reader')"><div class="bni-i">📚</div><div class="bni-l">Library</div></div>
+  <div class="bni" onclick="go('progress')"><div class="bni-i">📊</div><div class="bni-l">Progress</div></div>
+  <div class="bni" onclick="go('settings')"><div class="bni-i">⚙️</div><div class="bni-l">Settings</div></div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const sc=['school','homem','canvas','hint','reader','exam','progress','settings'];
+const lb={school:'NeuraOS · School mode',homem:'NeuraOS · Home mode',canvas:'Maths · Writing canvas',hint:'Canvas · Hint active · Stage 2',reader:'E-Reader · Chapter 4',exam:'Exam lock mode · Active',progress:'My progress · Class 10',settings:'Settings'};
+const nm={school:0,homem:0,canvas:1,hint:1,reader:2,exam:0,progress:3,settings:4};
+function go(id){
+  sc.forEach(s=>{const e=document.getElementById('s-'+s);if(e)e.style.display='none';});
+  const e=document.getElementById('s-'+id);if(e)e.style.display='flex';
+  document.getElementById('stlbl').textContent=lb[id]||id;
+  document.querySelectorAll('#pills .pill').forEach((p,i)=>p.classList.toggle('on',sc[i]===id));
+  document.querySelectorAll('.bni').forEach((n,i)=>n.classList.toggle('on',i===(nm[id]||0)));
+}
+</script>

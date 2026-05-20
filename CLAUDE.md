@@ -20,7 +20,52 @@ into one system — managing attendance, learning, fees, and communication.
 
 > **UPDATE THIS AT THE START OF EVERY SESSION.**
 
-**Layer 9 — Fleet / SmartPad Management** ← NEXT
+**Layer 12 — NeuraSphere (Moderation + Feed)** ← NEXT
+
+**Completed — Analytics Web UI (Layer 11):**
+
+- [x] Analytics types appended to `apps/web/src/types/common.ts` (AnalyticsPeriod through PredictionAccuracy — 24 types)
+- [x] `apps/web/src/hooks/useBookmarks.ts` — useBookmarks, useAddBookmark, useRemoveBookmark
+- [x] `apps/web/src/hooks/useAnalytics.ts` — 16 hooks (narrative, academic, attendance, financial, digital, yoy, benchmarks, student intel, section/class analytics, board results, share token, shared)
+- [x] `apps/web/src/components/ui/BookmarkButton.tsx` — filled/outline amber toggle
+- [x] `apps/web/src/components/layout/PageHeader.tsx` — bookmarkUrl + bookmarkTitle props added
+- [x] `apps/web/src/components/layout/Sidebar.tsx` — Bookmarks section with pinned links below nav
+- [x] `apps/web/src/pages/Analytics/AnalyticsPage.tsx` — 5-section page with sticky left nav, period selector, AI narrative, recharts charts for Academic/Attendance/Financial/Digital/YoY+Benchmarks
+- [x] `apps/web/src/pages/Analytics/ClassAnalyticsPage.tsx` — section comparison, top/bottom students, drill-down to section
+- [x] `apps/web/src/pages/Analytics/SectionAnalyticsPage.tsx` — KPI strip, searchable/sortable student roster
+- [x] `apps/web/src/pages/Analytics/StudentAnalyticsPage.tsx` — radar, subject mastery, mastery trajectory, attendance calendar, exam history, error patterns, AI insight, share
+- [x] `apps/web/src/pages/Analytics/BoardResultsPage.tsx` — empty state, subject avg chart, prediction accuracy, grade grid
+- [x] `apps/web/src/pages/Analytics/SharedAnalyticsPage.tsx` — public (no auth), narrative + mastery + risk summary
+- [x] `apps/web/src/App.tsx` — 5 new protected routes + public /shared/analytics/:token
+- [x] 0 TypeScript errors (full monorepo typecheck SUCCESS)
+
+**Completed — Analytics API Foundation (Layer 10):**
+
+- [x] Migration 022: `school_groups`, `school_group_memberships`, `school_analytics_narratives`, `school_health_scores`, `teacher_performance_snapshots`, `board_exam_results`, `neuralife_benchmark_stats`, `user_bookmarks`, `analytics_share_tokens` + RLS + seed (12-month health scores, 2 teacher snapshots, 4 benchmark metrics)
+- [x] ALTER `student_yearly_progress`: `is_rte_student BOOLEAN`, `admission_category TEXT`
+- [x] Types (api + web): `AnalyticsPeriod`, `AnalyticsFilter`, `SchoolNarrative`, `TeacherPerformanceRow`, `CurriculumGapRow`, `SubjectMasteryRow`, `ExamProgressionRow`, `AtRiskFunnelData`, `RteComparisonData`, `AcademicAnalytics`, `AttendanceDeepAnalytics`, `FinancialAnalytics`, `DigitalAnalytics`, `YoYComparison`, `BenchmarkData`, `StudentIntelligence`, `SectionComparison`, `BookmarkItem`, `ShareToken`, `BoardExamResult`, `PredictionAccuracy`, `SchoolNarrative` + attendance sub-types
+- [x] `AnalyticsDeepRepository` (50+ methods): school/AY info, narratives, teacher perf snapshots, subject mastery, curriculum gaps, exam progression, at-risk funnel, RTE comparison, attendance trend/heatmap/day-of-week/chronic absentees, fee collection trend/outstanding, salary-revenue ratio, SmartPad utilization, YoY comparisons, benchmark stats, student intelligence (profile/mastery/trajectory/attendance/sessions/errors/exam history), section comparison, board exam results/prediction accuracy, share tokens, bookmarks
+- [x] `analytics-deep.ts` (16 routes): GET/POST narrative, GET academic/attendance/financial/digital/yoy/benchmark, GET/POST student intelligence, GET section/class analytics, GET/POST board-results, POST share token, GET share/:token (public)
+- [x] `bookmarks.ts` (3 routes): GET/POST/DELETE bookmarks (max 10 per user)
+- [x] Column fixes: `label` → `year_label` (academic_years), `address` → `full_address` (schools), `class_year`/`section` filters removed from attendance table (use neura_id-based filtering), `balance` → computed from `amount_due - amount_paid - amount_waived`, `designation` removed from teachers join
+- [x] 0 TypeScript errors (full monorepo typecheck SUCCESS)
+
+**Completed — Fleet / SmartPad Management (Layer 9):**
+
+- [x] Migration 021: extends `smartpad_devices` (+7 cols), extends `smartpad_assignment_history` (+10 cols, nullable academic_year_id), creates `smartpad_health_snapshots`, `smartpad_alerts`, `smartpad_ota_campaigns` + RLS + demo seed (10 devices, 5 alerts, 1 OTA campaign, 14-day health snapshots)
+- [x] Types (api + web): `LATEST_FIRMWARE`, `DeviceStatus`, `SyncStatus`, `AlertSeverity`, `AlertType`, `FleetDevice`, `FleetAlert`, `FleetKPIs`, `FleetEfficiencyScore`, `FleetOverview`, `HealthSnapshot`, `AssignmentHistoryItem`, `DeviceDetail`, `OTACampaign`, `AssignDeviceInput`, `ReturnDeviceInput`
+- [x] `FleetRepository` (16 methods: list/find devices, update status, assign/return/markLost, list/acknowledge/resolve/insert alerts, health snapshots, assignment history, OTA campaigns, student enrichment helpers)
+- [x] `FleetService` (computeSyncStatus, computeKPIs, computeEfficiency, getOverview, getDeviceDetail, updateStatus, markLost, assignDevice, returnDevice, getAlerts, acknowledgeAlert, launchOTA, listOTACampaigns)
+- [x] 11 API routes in `fleet.ts`: GET overview, GET devices, GET device/:id, PUT status, PUT mark-lost, PUT assign, POST return, GET alerts, PUT alert acknowledge, GET ota/campaigns, POST ota/push
+- [x] `useFleet.ts` (9 hooks: useFleetOverview, useFleetDevices, useDeviceDetail, useFleetAlerts, useOTACampaigns, useUpdateDeviceStatus, useMarkDeviceLost, useAssignDevice, useReturnDevice, useAcknowledgeAlert, useLaunchOTA)
+- [x] `FleetPage` — 3 tabs: Overview (KPI strip, Leaflet map, alerts panel, device list with sync/status filters), OTA Management, Analytics
+- [x] `FleetMap.tsx` — react-leaflet@4.2.1 map with color-coded CircleMarker pins (green/amber/orange/red/grey by sync status)
+- [x] `DeviceDetailPanel.tsx` — slide-in panel: status badges, stat cards (battery/storage/sync/GPS), student assignment, battery trend chart, active alerts, assignment history chain with conditions/costs, usage stats
+- [x] `AssignDeviceModal.tsx`, `ReturnDeviceModal.tsx`, `MarkLostModal.tsx` — device lifecycle modals
+- [x] `OTAManagement.tsx` — outdated device checklist, select-all, launch OTA campaign, campaign history
+- [x] `FleetAnalytics.tsx` — sync distribution bar chart, battery histogram, fleet efficiency score gauge with breakdown bars, top-devices-by-usage bar chart
+- [x] App.tsx fleet route updated: PRINCIPAL + SCHOOL_ADMIN (was PRINCIPAL only)
+- [x] 0 TypeScript errors (web + api), full monorepo typecheck SUCCESS
 
 **Completed — Salary & Payroll (Layer 8):**
 
