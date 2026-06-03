@@ -1,0 +1,6 @@
+rootProject.name = 'NeuraLifeTeacher'
+// Monorepo (pnpm node-linker=hoisted): RN packages live in the ROOT node_modules,
+// not apps/mobile/node_modules. Resolve them from the workspace root (../../../).
+apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+includeBuild('../../../node_modules/@react-native/gradle-plugin')
