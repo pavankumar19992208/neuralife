@@ -5,7 +5,7 @@ import rateLimit from '@fastify/rate-limit'
 import { ZodError } from 'zod'
 import { config } from './lib/config.js'
 import logger from './lib/logger.js'
-import { supabaseAnon } from './lib/supabase.js'
+import { supabaseAnon, supabaseAdmin } from './lib/supabase.js'
 import correlationIdPlugin from './middleware/correlationId.js'
 import jwtPlugin from './middleware/jwt.js'
 import authRoutes from './routes/auth.js'
@@ -22,6 +22,9 @@ import fleetRoutes from './routes/fleet.js'
 import analyticsDeepRoutes from './routes/analytics-deep.js'
 import bookmarkRoutes from './routes/bookmarks.js'
 import sphereRoutes from './routes/sphere.js'
+import { teacherMobileRoutes } from './routes/teacher-mobile.js'
+import { startAttendanceReminderJob, startCoverageReminderJob } from './jobs/notificationJobs.js'
+import { sendFCMToTokens } from './lib/fcm.js'
 import { AppError } from './utils/errors.js'
 
 export async function startServer() {
@@ -163,6 +166,9 @@ export async function startServer() {
   // Sphere routes
   await fastify.register(sphereRoutes)
 
+  // Teacher Mobile routes (mobile app — /api/v1/teacher/*)
+  await fastify.register(teacherMobileRoutes, { prefix: '/api/v1/teacher' })
+
   // Graceful shutdown
   const shutdown = async (signal: string) => {
     logger.info({ signal }, 'Shutting down...')
@@ -175,6 +181,17 @@ export async function startServer() {
 
   await fastify.listen({ port: config.PORT, host: '0.0.0.0' })
   logger.info({ port: config.PORT }, `NeuraLife API running on port ${config.PORT}`)
+
+  // Start background cron jobs for teacher push notifications
+  // These run every 5 min Mon-Sat 7AM-4PM IST, independent of the HTTP server
+  Promise.all([
+    startAttendanceReminderJob(supabaseAdmin, sendFCMToTokens),
+    startCoverageReminderJob(supabaseAdmin, sendFCMToTokens),
+  ]).then(() => {
+    logger.info('[Jobs] Attendance + Coverage reminder jobs started (IST schedule)')
+  }).catch(err => {
+    logger.warn({ err }, '[Jobs] node-cron not installed — reminder jobs skipped (run pnpm install)')
+  })
 }
 
 startServer().catch((err) => {

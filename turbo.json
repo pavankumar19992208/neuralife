@@ -29,6 +29,14 @@
     "prod": {
       "cache": false,
       "persistent": true
+    },
+    "mobile#android": {
+      "dependsOn": ["^build"],
+      "outputs": ["android/app/build/**"]
+    },
+    "mobile#start": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

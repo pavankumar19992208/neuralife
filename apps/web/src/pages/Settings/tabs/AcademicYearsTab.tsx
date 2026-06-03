@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Calendar, Users, ArrowRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +19,8 @@ import {
   useStudentPromotions,
   useStudentsForRelease
 } from '@/hooks/useSettings';
+import { useMutation } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 
 export function AcademicYearsTab() {
   const { data: academicYears, isLoading } = useAcademicYears();
@@ -28,6 +30,14 @@ export function AcademicYearsTab() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPromotionModal, setShowPromotionModal] = useState(false);
+  const [attendanceMode, setAttendanceModeLocal] = useState<'ONCE_PER_DAY' | 'PER_PERIOD'>('ONCE_PER_DAY');
+  const [modeSaved, setModeSaved] = useState(false);
+
+  const { mutate: saveMode, isPending: savingMode } = useMutation({
+    mutationFn: (mode: 'ONCE_PER_DAY' | 'PER_PERIOD') =>
+      api.put('/teacher/schools/settings', { attendance_mode: mode }),
+    onSuccess: () => { setModeSaved(true); setTimeout(() => setModeSaved(false), 2000); },
+  });
 
   const handleCreateYear = (yearData: any) => {
     createYear(yearData, {
@@ -229,6 +239,57 @@ export function AcademicYearsTab() {
               </Button>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Attendance Configuration Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Attendance Configuration</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            {[
+              {
+                value: 'ONCE_PER_DAY' as const,
+                label: 'Once per day (recommended)',
+                description: 'One record per student per school day. Any assigned teacher can mark for their class.',
+              },
+              {
+                value: 'PER_PERIOD' as const,
+                label: 'Period-wise',
+                description: "Separate record per student per period. Only that period's assigned teacher can mark.",
+              },
+            ].map(opt => (
+              <label
+                key={opt.value}
+                className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-surface-raised transition-colors"
+                style={{ borderColor: attendanceMode === opt.value ? 'var(--primary)' : 'var(--border)' }}>
+                <input
+                  type="radio"
+                  name="attendance_mode"
+                  value={opt.value}
+                  checked={attendanceMode === opt.value}
+                  onChange={() => setAttendanceModeLocal(opt.value)}
+                  className="mt-0.5"
+                />
+                <div>
+                  <div className="text-sm font-medium text-text-primary">{opt.label}</div>
+                  <div className="text-xs text-text-secondary mt-0.5">{opt.description}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+          <p className="text-xs text-text-muted">
+            Used by Teacher App and Web Admin attendance tracking. Changing mode affects new submissions only.
+          </p>
+          <Button
+            size="sm"
+            onClick={() => saveMode(attendanceMode)}
+            disabled={savingMode}
+          >
+            {modeSaved ? '✓ Saved' : savingMode ? 'Saving…' : 'Save Attendance Mode'}
+          </Button>
         </CardContent>
       </Card>
     </div>

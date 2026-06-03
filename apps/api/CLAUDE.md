@@ -2,7 +2,7 @@
 
 > Adds API-specific rules ON TOP of root CLAUDE.md. Both are always in effect.
 
----
+## check depenedent api and screens from other repos like ml, web and their api's , if they would be impacted with this change check them also, should work properly
 
 ## This Package
 

@@ -33,6 +33,12 @@
     "pnpm": ">=8.0.0"
   },
   "packageManager": "pnpm@8.15.0",
+  "pnpm": {
+    "overrides": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0"
+    }
+  },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1045.0",
     "supabase": "^2.98.2"

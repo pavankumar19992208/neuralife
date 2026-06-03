@@ -85,7 +85,7 @@ export class FeeRepository {
     const [studentResult, ledgerResult] = await Promise.all([
       this.supabase
         .from('student_yearly_progress')
-        .select('class_year, section, students!student_yearly_progress_neura_id_fkey(full_name)')
+        .select('class_year, section, students(full_name)')
         .eq('neura_id', neuraId)
         .eq('school_id', schoolId)
         .eq('academic_year_id', academicYearId)
@@ -105,9 +105,8 @@ export class FeeRepository {
     }
 
     const syp = studentResult.data
-    const studentArr = syp.students as unknown as Array<{ full_name: string }> | null
-    const fullName =
-      Array.isArray(studentArr) && studentArr.length > 0 ? studentArr[0].full_name : neuraId
+    const student = syp.students as unknown as { full_name: string } | null
+    const fullName = student?.full_name || neuraId
 
     if (ledgerResult.error) throw new DatabaseError(ledgerResult.error.message, { correlationId })
 

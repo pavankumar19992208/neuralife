@@ -20,7 +20,49 @@ into one system — managing attendance, learning, fees, and communication.
 
 > **UPDATE THIS AT THE START OF EVERY SESSION.**
 
-**Layer 12 — NeuraSphere (Moderation + Feed)** ← NEXT
+**Teacher Mobile App — Foundation (apps/mobile)** ← IN PROGRESS
+
+**Completed — Teacher App Foundation:**
+
+- [x] React Native 0.74 scaffolded into apps/mobile (android/ + ios/, package `in.neuralife.teacher`, portrait-locked, minSdk 24/target 34)
+- [x] Monorepo wiring: metro.config.js (watchFolders root), babel module-resolver aliases, tsconfig paths, .env.development/.production/.example, turbo.json mobile tasks
+- [x] Android: BLE/biometric/camera/storage permissions, jitpack repo, WatermelonDB jsi aar
+- [x] Design system: NeuraLife Intelligence OS v3.0 (neural academy palette, teacher-optimized typography, AI components)
+- [x] Core libs: dates (IST), api client (correlation-id + 401 logout), storage (Keychain), responsive (rv()), branding (useBranding()), haptics
+- [x] Stores: authStore (decodes real apps/api JWT, derives roles, setClassTeacher), schoolStore (branding), syncStore
+- [x] Hooks: useEntryAnimation / useStaggerAnimation / useTitleAnimation
+- [x] UI components: SyncPill, SegmentHeader, Card, Badge (+ custom color prop), Avatar, Button (haptic+school accent), Skeleton/CardSkeleton, EmptyState, ErrorState, Text (variant system + Telugu support)
+- [x] Navigation: AppNavigator (native-stack auth gate), TeacherNavigator (bottom tabs, conditional My Class)
+- [x] Auth screens: LoginScreen (rotating power statements, pulse mark, /auth/otp/request) + OTPScreen (6 boxes, paste, dev-OTP prefill, resend countdown, role guard)
+- [x] 6 placeholder screens (Attendance/MyClasses/MyClass/Chat/Profile) + index.js (GestureHandler + SafeAreaProvider + QueryClient)
+- [x] Spec doc: docs/specs/NeuraLife — Teacher App Foundation.md
+
+**Completed — Home Screen (Teaching Command Center):**
+
+- [x] Migration 024: full 5-day timetable seed (138 slots, 3 sections, no teacher conflicts) + homework demo data
+- [x] API: `GET /api/v1/teacher/home` — teacher-mobile.ts + teacher-mobile.repository.ts (IST-aware, class teacher detection, attendance/alert queries)
+- [x] Types: `src/types/home.ts` (PeriodCard, KpiData, AlertItem, HomeData, ContextState)
+- [x] Hook: `useHomeData.ts` (staleTime 0, branding sync into schoolStore)
+- [x] Hook: `usePeriodStatus.ts` (minute-aligned IST clock, 6 ContextState values, live elapsedPct)
+- [x] Components: SchoolHeader, KpiStrip (AI-pending state), ContextBar (cross-fade + PulseDot), PeriodCard (NOW breathing + progress bar), AlertItem, PeriodActionSheet (spring bottom sheet)
+- [x] HomeScreen: sticky header pattern (SchoolHeader + KpiStrip + ContextBar above SectionList), Sunday/empty/error states
+- [x] 0 TypeScript errors (API + mobile)
+
+**Completed — NeuraLife Intelligence OS Design System (v3.0):**
+
+- [x] Complete theme system redesign: Neural Academy Palette with neural intelligence core (#1E40AF/#4338CA/#7C3AED) + academic heritage (#D97706) 
+- [x] Three-tier typography: Academic (Libre Baskerville serif), Neural (Inter sans), Teacher efficiency (Inter optimized)
+- [x] Enhanced component system: Neural variants for Card/Button/Badge/Text with AI processing states
+- [x] Neural Intelligence components: IntelligenceIndicator, NeuralPulse, StatCard with AI visualization
+- [x] Background intelligence system: Neural network visualization (dark) + clean intelligence grid (light)
+- [x] Teacher-optimized architecture: Spacing/animations/touch targets sized for classroom conditions
+- [x] Screen containers: Teaching/Auth/Data/Neural optimized layouts with scrim intelligence
+- [x] Cultural integration: Telugu support + academic tradition respect + modern neural technology
+- [x] Documentation: Complete CLAUDE.md updates + neural intelligence redesign summary
+- [x] Teacher experience: Feel like neural operators of school intelligence OS
+- [x] 0 TypeScript errors (full transformation complete)
+
+**Layer 12 — NeuraSphere (Moderation + Feed)** ← LATER
 
 **Completed — Analytics Web UI (Layer 11):**
 
@@ -568,3 +610,44 @@ npm run prod  → NODE_ENV=production   (reads .env + .env.production)
 Secrets (.env — gitignored):   Supabase keys, JWT keys, MSG91, Resend, FCM, AWS
 Feature flags (.env.development / .env.production — committed, no secrets)
 ```
+
+---
+
+## Mobile App (apps/mobile)
+
+Tech: React Native 0.74, WatermelonDB, Zustand, TanStack Query
+Platform: Android-first (iOS in v2)
+APK package: in.neuralife.teacher
+Demo teacher: 9876543210 (K. Suresh Kumar, PRINCIPAL + CLASS_TEACHER)
+
+Running the app:
+  cd apps/mobile
+  npx react-native run-android
+  (Ensure Android emulator is running or physical device connected via USB)
+
+Metro server (separate terminal):
+  cd apps/mobile && npx react-native start
+
+Building debug APK:
+  cd apps/mobile/android && ./gradlew assembleDebug
+  APK location: android/app/build/outputs/apk/debug/app-debug.apk
+
+Key files:
+  src/navigation/AppNavigator.tsx  — root navigation (native-stack, auth gate)
+  src/store/authStore.ts          — JWT auth state (decodes apps/api access token)
+  src/lib/api.ts                  — API client (uses local IP in dev)
+  src/constants/colors.ts         — design system colors
+  src/hooks/useEntryAnimation.ts  — screen entry animations
+
+Auth contract (apps/api): POST /auth/otp/request → {devOtp?}, POST /auth/otp/verify
+  → {accessToken, refreshToken, role, expiresIn}. JWT carries a single `role`
+  (PRINCIPAL|TEACHER|SCHOOL_ADMIN) + school_id + teacher_id. CLASS_TEACHER status
+  is NOT in the JWT — set later via setClassTeacher() from a profile fetch.
+
+Screen template: .claude/commands/new-screen.md
+API route guide: .claude/commands/mobile-api-route.md
+
+pnpm note: apps/mobile/.npmrc requests hoisted linking, but pnpm reads .npmrc
+from the workspace root during a workspace install. For native Android builds,
+node_modules must be hoisted so gradle resolves @react-native-community/cli-platform-android
+via ../node_modules. See docs/specs for the foundation spec.
